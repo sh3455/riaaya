@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:riaaya_app/features/splash/presentation/view/pages/splash_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/splash/presentation/bloc/cubit/splash_cubit.dart';
+import 'features/splash/presentation/view/pages/splash_screen.dart';
 
-void main(){
-  runApp(MyApp());
+void main() {
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => SplashCubit()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,7 +21,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      initialRoute: SplashScreen.routeName,
+      routes: {
+        SplashScreen.routeName: (context) => const SplashScreen(),
+      },
     );
   }
 }
