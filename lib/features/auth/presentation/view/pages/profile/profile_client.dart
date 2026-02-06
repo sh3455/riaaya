@@ -1,17 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ClientProfilePage extends StatelessWidget {
   const ClientProfilePage({super.key});
-
 
   @override
   Widget build(BuildContext context) {
     const bg = Color(0xFFF5F6FF);
     const primary = Color(0xFF5B6CFF);
 
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       backgroundColor: bg,
-
       appBar: AppBar(
         backgroundColor: bg,
         elevation: 0,
@@ -28,144 +30,170 @@ class ClientProfilePage extends StatelessWidget {
         ],
       ),
 
-      // ✅ المحتوى بيتحرك لوحده والبار ثابت تحت
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
-        child: Column(
-          children: [
-            // Profile Picture
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(.05),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    "Profile Picture",
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 12),
+      body: uid == null
+          ? const Center(child: Text("Not logged in"))
+          : StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('clients')
+                  .doc(uid)
+                  .snapshots(),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snap.hasData || !snap.data!.exists) {
+                  return const Center(child: Text("Profile not found"));
+                }
 
-                  // ✅ دائرة وجواها لوجو شخص
-                  Container(
-                    width: 86,
-                    height: 86,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: primary.withOpacity(.12),
-                      border: Border.all(
-                        color: primary.withOpacity(.30),
-                        width: 2,
+                final data = snap.data!.data() as Map<String, dynamic>;
+
+                final name = (data['name'] ?? '').toString();
+                final birth = (data['birth'] ?? '').toString();
+                final phone = (data['phone'] ?? '').toString();
+                final email = (data['email'] ?? '').toString();
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
+                  child: Column(
+                    children: [
+                      // Profile Picture Card
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.05),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              "Profile Picture",
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // ✅ دائرة + لوجو شخص
+                            Container(
+                              width: 86,
+                              height: 86,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primary.withOpacity(.12),
+                                border: Border.all(
+                                  color: primary.withOpacity(.30),
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  color: primary,
+                                  size: 44,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: primary,
+                                side: const BorderSide(color: primary, width: 1.4),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: const Text(
+                                "Change Profile Photo",
+                                style: TextStyle(fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.person_rounded,
-                        color: primary,
-                        size: 44,
+
+                      const SizedBox(height: 14),
+
+                      // Personal Details
+                      _SectionCard(
+                        title: "Personal Details",
+                        onEdit: () {},
+                        children: [
+                          _Field(label: "Name", value: name.isEmpty ? "-" : name),
+                          const SizedBox(height: 10),
+                          _Field(label: "Date of Birth", value: birth.isEmpty ? "-" : birth),
+                        ],
                       ),
-                    ),
-                  ),
 
-                  const SizedBox(height: 12),
+                      const SizedBox(height: 14),
 
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: primary,
-                      side: const BorderSide(color: primary, width: 1.4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                      // Contact Information
+                      _SectionCard(
+                        title: "Contact Information",
+                        onEdit: () {},
+                        children: [
+                          _Field(label: "Email", value: email.isEmpty ? "-" : email),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _Field(
+                                  label: "Phone Number",
+                                  value: phone.isEmpty ? "-" : phone,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                height: 46,
+                                child: OutlinedButton(
+                                  onPressed: () {},
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: primary,
+                                    side: const BorderSide(color: primary, width: 1.4),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Change Email",
+                                    style: TextStyle(fontWeight: FontWeight.w900),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    child: const Text(
-                      "Change Profile Photo",
-                      style: TextStyle(fontWeight: FontWeight.w900),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
 
-            const SizedBox(height: 14),
-
-            const _SectionCard(
-              title: "Personal Details",
-              fields: [
-                _Field(label: "Name", value: "Jane Doe"),
-                _Field(label: "Date of Birth", value: "1990-05-15"),
-              ],
-            ),
-
-            const SizedBox(height: 14),
-
-            _SectionCard(
-              title: "Contact Information",
-              trailingButton: OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: primary,
-                  side: const BorderSide(color: primary, width: 1.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  "Change Email",
-                  style: TextStyle(fontWeight: FontWeight.w900),
-                ),
-              ),
-              fields: const [
-                _Field(label: "Email", value: "jane.doe@example.com"),
-                _Field(label: "Phone Number", value: "+1 555-123-4567"),
-              ],
-            ),
-
-            const SizedBox(height: 14),
-
-            const _SectionCard(
-              title: "Address",
-              fields: [
-                _Field(label: "Street Address", value: "123 Care Street"),
-                _Field(label: "City", value: "Gentle City"),
-              ],
-              gridFields: [
-                _Field(label: "State", value: "GA"),
-                _Field(label: "ZIP Code", value: "12345"),
-              ],
-            ),
-          ],
-        ),
-      ),
-
-      // ✅ ثابت تحت الشاشة
+      // ✅ Bottom ثابت
       bottomNavigationBar: const _BottomBar(),
     );
   }
 }
 
-// ===================== Components =====================
+// ---------- UI Components ----------
 
 class _SectionCard extends StatelessWidget {
   final String title;
-  final List<_Field> fields;
-  final List<_Field>? gridFields;
-  final Widget? trailingButton;
+  final VoidCallback onEdit;
+  final List<Widget> children;
 
   const _SectionCard({
     required this.title,
-    required this.fields,
-    this.gridFields,
-    this.trailingButton,
+    required this.onEdit,
+    required this.children,
   });
 
   @override
@@ -187,7 +215,6 @@ class _SectionCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -198,37 +225,13 @@ class _SectionCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: onEdit,
                 icon: const Icon(Icons.edit, color: primary),
               ),
             ],
           ),
           const SizedBox(height: 6),
-
-          ...fields
-              .map(
-                (f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: f,
-                ),
-              )
-              .toList(),
-
-          if (trailingButton != null) ...[
-            const SizedBox(height: 4),
-            Align(alignment: Alignment.centerRight, child: trailingButton!),
-          ],
-
-          if (gridFields != null) ...[
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: gridFields![0]),
-                const SizedBox(width: 10),
-                Expanded(child: gridFields![1]),
-              ],
-            ),
-          ],
+          ...children,
         ],
       ),
     );
@@ -244,6 +247,7 @@ class _Field extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFF2F4FF),
@@ -261,7 +265,10 @@ class _Field extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
         ],
       ),
     );
@@ -276,7 +283,7 @@ class _BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<_BottomBar> {
-  int index = 2; // Profile selected
+  int index = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -304,11 +311,11 @@ class _BottomBarState extends State<_BottomBar> {
         unselectedItemColor: const Color(0xFF9AA0AF),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.credit_card_outlined),
-            label: "Cards",
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_outlined),
+            icon: Icon(Icons.checklist_outlined),
             label: "Requests",
           ),
           BottomNavigationBarItem(

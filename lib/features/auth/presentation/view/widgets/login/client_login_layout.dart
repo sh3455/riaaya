@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riaaya_app/core/widgets/custom_button.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/profile/profile_client.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/custom_button_social.dart';
 import '../../pages/register/register_screen.dart';
 import '../Custom_text_field_login.dart';
@@ -24,10 +25,11 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
     });
 
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
 
       print("Login successful! UID: ${userCredential.user!.uid}");
 
@@ -58,7 +60,10 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
         SizedBox(height: size.height * 0.03),
         CustomTextFieldLogin(hinText: "Email", controller: emailController),
         SizedBox(height: size.height * 0.03),
-        CustomTextFieldLogin(hinText: "Password", controller: passwordController),
+        CustomTextFieldLogin(
+          hinText: "Password",
+          controller: passwordController,
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
@@ -73,11 +78,21 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
         isLoading
             ? const CircularProgressIndicator()
             : CustomButton(
-          text: "Login",
-          onTap: login,
-        ),
+                text: "Login",
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ClientProfilePage(),
+                    ),
+                  );
+                },
+              ),
         SizedBox(height: size.height * 0.05),
-        CustomButtonSocial(textSocial: "Continue with Google", icon: Icons.g_mobiledata),
+        CustomButtonSocial(
+          textSocial: "Continue with Google",
+          icon: Icons.g_mobiledata,
+        ),
         CustomTextRegister(
           onTap: () {
             Navigator.pushReplacement(
