@@ -2,13 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
 
-  Future<UserCredential> createClient({
+  FirebaseService({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
+
+  Future<UserCredential> createUser({
+    required String role,
     required String name,
-    required String birth,
-    required String phone,
+    String? birth,
+    String? phone,
+    String? location,
+    String? experience,
     required String email,
     required String password,
   }) async {
@@ -17,13 +26,33 @@ class FirebaseService {
       password: password,
     );
 
-    await _firestore.collection('clients').doc(credential.user!.uid).set({
+    final data = {
+      'uid': credential.user!.uid,
       'name': name,
-      'birth': birth,
-      'phone': phone,
       'email': email,
-    });
+      'role': role,
+      'createdAt': FieldValue.serverTimestamp(),
+    };
+
+    if (birth != null) data['birth'] = birth;
+    if (phone != null) data['phone'] = phone;
+    if (location != null) data['location'] = location;
+    if (experience != null) data['experience'] = experience;
+
+    final collectionName = role == 'nurse' ? 'nurses' : 'clients';
+    await _firestore.collection(collectionName).doc(credential.user!.uid).set(data);
 
     return credential;
+  }
+
+  Future<UserCredential> login({
+    required String email,
+    required String password,
+  }) async {
+    return await _auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }
