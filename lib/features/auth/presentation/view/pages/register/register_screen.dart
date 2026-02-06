@@ -9,7 +9,6 @@ class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
-
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
@@ -62,8 +61,8 @@ class RegisterScreen extends StatelessWidget {
                   Expanded(
                     child: TabBarView(
                       children: [
-                        ClientRegisterPage(),
-                        NurseRegisterLayout(),
+                        SingleChildScrollView(child:ClientRegisterPage()),
+                        SingleChildScrollView(child: NurseRegisterLayout()),
                       ],
                     ),
                   ),
