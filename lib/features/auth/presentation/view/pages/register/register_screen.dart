@@ -61,8 +61,8 @@ class RegisterScreen extends StatelessWidget {
                   Expanded(
                     child: TabBarView(
                       children: [
-                        SingleChildScrollView(child:ClientRegisterPage()),
-                        SingleChildScrollView(child: NurseRegisterLayout()),
+                        ClientRegisterPage(),
+                        NurseRegisterLayout(),
                       ],
                     ),
                   ),
