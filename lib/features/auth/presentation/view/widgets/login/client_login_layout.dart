@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riaaya_app/core/widgets/custom_button.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/profile_client.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/custom_button_social.dart';
 import '../../pages/register/register_screen.dart';
 import '../Custom_text_field_login.dart';
