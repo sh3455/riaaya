@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:riaaya_app/features/auth/presentation/view_model/nurse_profile_page.dart';
 import '../../../../../../core/widgets/custom_button.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_button_social.dart';
@@ -24,10 +25,11 @@ class _NurseLoginLayoutState extends State<NurseLoginLayout> {
     });
 
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
 
       print("Nurse login successful! UID: ${userCredential.user!.uid}");
 
@@ -58,7 +60,10 @@ class _NurseLoginLayoutState extends State<NurseLoginLayout> {
         SizedBox(height: size.height * 0.03),
         CustomTextFieldLogin(hinText: "Email", controller: emailController),
         SizedBox(height: size.height * 0.03),
-        CustomTextFieldLogin(hinText: "Password", controller: passwordController),
+        CustomTextFieldLogin(
+          hinText: "Password",
+          controller: passwordController,
+        ),
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
@@ -73,11 +78,21 @@ class _NurseLoginLayoutState extends State<NurseLoginLayout> {
         isLoading
             ? const CircularProgressIndicator()
             : CustomButton(
-          text: "Login",
-          onTap: login,
-        ),
+                text: "Login",
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NurseProfilePage(),
+                    ),
+                  );
+                },
+              ),
         SizedBox(height: size.height * 0.05),
-        CustomButtonSocial(textSocial: "Continue with Google", icon: Icons.g_mobiledata),
+        CustomButtonSocial(
+          textSocial: "Continue with Google",
+          icon: Icons.g_mobiledata,
+        ),
         SizedBox(height: size.height * 0.01),
         CustomTextRegister(
           onTap: () {

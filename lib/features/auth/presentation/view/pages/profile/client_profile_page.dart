@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:riaaya_app/features/auth/data/client_profile_repository.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/edit_dialog.dart';
@@ -9,6 +10,7 @@ import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profil
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/section_card.dart';
 import 'package:riaaya_app/features/auth/presentation/view_model/cubit/client_profile_cubit.dart';
 import 'package:riaaya_app/features/auth/presentation/view_model/cubit/client_profile_state.dart';
+
 
 class ClientProfilePage extends StatelessWidget {
   const ClientProfilePage({super.key});
@@ -47,7 +49,6 @@ class _ClientProfileView extends StatelessWidget {
     return Scaffold(
       backgroundColor: bg,
 
-      // ✅ شيلنا settings
       appBar: AppBar(
         backgroundColor: bg,
         elevation: 0,
@@ -61,9 +62,9 @@ class _ClientProfileView extends StatelessWidget {
       body: BlocConsumer<ClientProfileCubit, ClientProfileState>(
         listener: (context, state) {
           if (state is ClientProfileError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
           }
         },
         builder: (context, state) {
@@ -80,6 +81,7 @@ class _ClientProfileView extends StatelessWidget {
           return LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 720;
+
               final content = ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 920),
                 child: Padding(
@@ -88,13 +90,9 @@ class _ClientProfileView extends StatelessWidget {
                       ? Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: _leftColumn(context, p, loaded.isSaving),
-                            ),
+                            Expanded(child: _leftColumn(context, p, loaded.isSaving)),
                             const SizedBox(width: 14),
-                            Expanded(
-                              child: _rightColumn(context, p, loaded.isSaving),
-                            ),
+                            Expanded(child: _rightColumn(context, p, loaded.isSaving)),
                           ],
                         )
                       : Column(
@@ -115,13 +113,23 @@ class _ClientProfileView extends StatelessWidget {
         },
       ),
 
+      // ✅ Navigation شغال
       bottomNavigationBar: AppBottomBar(
         initialIndex: 2,
         onChanged: (i) {
-          // هنا تقدر تعمل navigation فعلي
-          // 0 => Create page
-          // 1 => Requests page
-          // 2 => Profile (انت فيها)
+          if (i == 2) return; // انت في Profile
+
+          // if (i == 0) {
+          //   Navigator.pushReplacement(
+          //     context
+          //     // MaterialPageRoute(builder: (_) => const ClientCreatePage()),
+          //   );
+          // } else if (i == 1) {
+          //   Navigator.pushReplacement(
+          //     context
+          //     // MaterialPageRoute(builder: (_) => const ClientRequestsPage()),
+          //   );
+          // }
         },
       ),
     );
@@ -140,7 +148,11 @@ class _ClientProfileView extends StatelessWidget {
   }
 
   Widget _rightColumn(BuildContext context, p, bool saving) {
-    return Column(children: [_contactCard(context, p, saving)]);
+    return Column(
+      children: [
+        _contactCard(context, p, saving),
+      ],
+    );
   }
 
   // ---------- Cards ----------
@@ -207,16 +219,8 @@ class _ClientProfileView extends StatelessWidget {
                 context: context,
                 title: "Edit Personal Details",
                 fields: [
-                  EditField(
-                    keyName: "name",
-                    label: "Name",
-                    initialValue: p.name,
-                  ),
-                  EditField(
-                    keyName: "birth",
-                    label: "Birth (YYYY-MM-DD)",
-                    initialValue: p.birth,
-                  ),
+                  EditField(keyName: "name", label: "Name", initialValue: p.name),
+                  EditField(keyName: "birth", label: "Birth (YYYY-MM-DD)", initialValue: p.birth),
                 ],
               );
               if (updates != null) {
@@ -243,16 +247,8 @@ class _ClientProfileView extends StatelessWidget {
                 context: context,
                 title: "Edit Contact Info",
                 fields: [
-                  EditField(
-                    keyName: "email",
-                    label: "Email",
-                    initialValue: p.email,
-                  ),
-                  EditField(
-                    keyName: "phone",
-                    label: "Phone",
-                    initialValue: p.phone,
-                  ),
+                  EditField(keyName: "email", label: "Email", initialValue: p.email),
+                  EditField(keyName: "phone", label: "Phone", initialValue: p.phone),
                 ],
               );
               if (updates != null) {
@@ -264,9 +260,7 @@ class _ClientProfileView extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(
-              child: FieldTile(label: "Phone Number", value: p.phone),
-            ),
+            Expanded(child: FieldTile(label: "Phone Number", value: p.phone)),
             const SizedBox(width: 10),
             SizedBox(
               height: 46,
@@ -278,25 +272,17 @@ class _ClientProfileView extends StatelessWidget {
                           context: context,
                           title: "Change Email",
                           fields: [
-                            EditField(
-                              keyName: "email",
-                              label: "Email",
-                              initialValue: p.email,
-                            ),
+                            EditField(keyName: "email", label: "Email", initialValue: p.email),
                           ],
                         );
                         if (updates != null) {
-                          context.read<ClientProfileCubit>().updateFields(
-                            updates,
-                          );
+                          context.read<ClientProfileCubit>().updateFields(updates);
                         }
                       },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primary,
                   side: const BorderSide(color: primary, width: 1.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 child: const Text(
                   "Change Email",

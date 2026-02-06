@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
 
-class AppBottomBar extends StatefulWidget {
+class AppBottomBar extends StatelessWidget {
   final int initialIndex;
-  final void Function(int index)? onChanged;
+  final void Function(int) onChanged;
 
-  const AppBottomBar({super.key, this.initialIndex = 2, this.onChanged});
-
-  @override
-  State<AppBottomBar> createState() => _AppBottomBarState();
-}
-
-class _AppBottomBarState extends State<AppBottomBar> {
-  late int index;
-
-  @override
-  void initState() {
-    super.initState();
-    index = widget.initialIndex;
-  }
+  const AppBottomBar({
+    super.key,
+    required this.initialIndex,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +27,8 @@ class _AppBottomBarState extends State<AppBottomBar> {
         ],
       ),
       child: BottomNavigationBar(
-        currentIndex: index,
-        onTap: (i) {
-          setState(() => index = i);
-          widget.onChanged?.call(i);
-        },
+        currentIndex: initialIndex,
+        onTap: onChanged,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         elevation: 0,
