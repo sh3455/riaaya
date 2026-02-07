@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:riaaya_app/features/auth/presentation/view_model/cubit/nurse_register_state.dart';
 
-import 'nurse_register_cubit.dart';
 
 
 class NurseRegisterCubit extends Cubit<NurseRegisterState> {

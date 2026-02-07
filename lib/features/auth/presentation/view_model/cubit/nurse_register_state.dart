@@ -1,6 +1,3 @@
-part of 'nurse_register_cubit.dart';
-
-@immutable
 abstract class NurseRegisterState {}
 
 class NurseRegisterInitial extends NurseRegisterState {}
