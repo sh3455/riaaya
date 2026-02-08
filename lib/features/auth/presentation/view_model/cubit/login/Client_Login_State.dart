@@ -1,4 +1,4 @@
-abstract class ClientLoginState {}
+class ClientLoginState {}
 
 class ClientLoginInitial extends ClientLoginState {}
 

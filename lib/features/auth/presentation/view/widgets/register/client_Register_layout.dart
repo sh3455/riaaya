@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/widgets/custom_button.dart';
-import '../../../view_model/cubit/client_register_cubit.dart';
-import '../../../view_model/cubit/client_register_state.dart';
+import '../../../view_model/cubit/register/client_register_cubit.dart';
+import '../../../view_model/cubit/register/client_register_state.dart';
 import '../../pages/login/login_page.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_button_social.dart';
