@@ -5,6 +5,7 @@ import 'package:riaaya_app/core/widgets/custom_button.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/register/register_screen.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/custom_button_social.dart';
+import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_text_register.dart';
 
@@ -25,8 +26,12 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
   void login() async {
     // Validation
     setState(() {
-      errors['email'] = emailController.text.isEmpty ? "This field is required" : null;
-      errors['password'] = passwordController.text.isEmpty ? "This field is required" : null;
+      errors['email'] = emailController.text.isEmpty
+          ? "This field is required"
+          : null;
+      errors['password'] = passwordController.text.isEmpty
+          ? "This field is required"
+          : null;
     });
 
     if (errors['email'] != null || errors['password'] != null) return;
@@ -36,14 +41,18 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
     });
 
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
 
       final uid = userCredential.user!.uid;
 
-      final doc = await FirebaseFirestore.instance.collection('clients').doc(uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('clients')
+          .doc(uid)
+          .get();
 
       if (!doc.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,10 +66,9 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const ClientProfilePage()),
+          MaterialPageRoute(builder: (_) => const RequestStatusScreen()),
         );
       }
-
     } on FirebaseAuthException catch (e) {
       String msg;
       if (e.code == 'user-not-found') {
@@ -72,7 +80,9 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     } finally {
       if (mounted) {
         setState(() {
@@ -102,7 +112,10 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
               if (errors['email'] != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text(errors['email']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  child: Text(
+                    errors['email']!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
                 ),
 
               SizedBox(height: size.height * 0.03),
@@ -116,7 +129,10 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
               if (errors['password'] != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text(errors['password']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  child: Text(
+                    errors['password']!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
                 ),
 
               Align(
@@ -125,17 +141,17 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
                   onPressed: () {},
                   child: const Text(
                     "Forgot password?",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
 
               SizedBox(height: size.height * 0.03),
 
-              CustomButton(
-                text: "Login",
-                onTap: login,
-              ),
+              CustomButton(text: "Login", onTap: login),
 
               SizedBox(height: size.height * 0.05),
 
@@ -148,7 +164,9 @@ class _ClientLoginLayoutState extends State<ClientLoginLayout> {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
                   );
                 },
                 text: "Don't have an account? ",
