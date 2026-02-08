@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/nurse_profile_page.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/profile/nurse_layout.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/profile/profile_nurse.dart';
 import '../../../../../../core/widgets/custom_button.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_button_social.dart';
@@ -34,7 +35,7 @@ class _NurseLoginLayoutState extends State<NurseLoginLayout> {
       print("Nurse login successful! UID: ${userCredential.user!.uid}");
 
       // بعد تسجيل الدخول ممكن توجه للـ Nurse Dashboard
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => NurseHomePage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => NurseProfilePage()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No nurse found for that email.');
@@ -83,7 +84,7 @@ class _NurseLoginLayoutState extends State<NurseLoginLayout> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const NurseProfilePage(),
+                      builder: (context) => const NurseLayout(),
                     ),
                   );
                 },

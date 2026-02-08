@@ -1,0 +1,66 @@
+import 'dart:async';
+
+import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'nurse_profile_state.dart';
+
+class NurseProfileCubit extends Cubit<NurseProfileState> {
+  final String uid;
+  final FirebaseFirestore firestore;
+
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _sub;
+
+  NurseProfileCubit({required this.uid, required this.firestore})
+    : super(const NurseProfileLoading());
+
+  // تحميل الداتا
+  void start() {
+    _sub?.cancel();
+
+    _sub = firestore
+        .collection('nurses')
+        .doc(uid)
+        .snapshots()
+        .listen(
+          (doc) {
+            emit(NurseProfileLoaded(data: doc.data() ?? {}));
+          },
+          onError: (e) {
+            emit(NurseProfileError(e.toString()));
+          },
+        );
+  }
+
+  // تحديث الداتا
+  Future<void> updateFields(Map<String, dynamic> updates) async {
+    final current = state;
+    if (current is! NurseProfileLoaded) return;
+
+    // تنظيف القيم
+    final clean = <String, dynamic>{};
+    updates.forEach((k, v) {
+      final value = (v ?? '').toString().trim();
+      if (value.isNotEmpty) clean[k] = value;
+    });
+    if (clean.isEmpty) return;
+
+    // ✅ تحديث محلي فورًا (Optimistic)
+    final merged = Map<String, dynamic>.from(current.data)..addAll(clean);
+    emit(NurseProfileLoaded(data: merged, isSaving: true));
+
+    try {
+      await firestore
+          .collection('nurses')
+          .doc(uid)
+          .set(clean, SetOptions(merge: true));
+
+      // ✅ خلّصنا حفظ
+      emit(NurseProfileLoaded(data: merged, isSaving: false));
+    } catch (e) {
+      emit(NurseProfileError("Update failed: $e"));
+      // رجّع الحالة القديمة
+      emit(current.copyWith(isSaving: false));
+    }
+  }
+}

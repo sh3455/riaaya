@@ -8,8 +8,8 @@ import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profil
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/edit_dialog.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/field_tile.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/section_card.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/client_profile_cubit.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/client_profile_state.dart';
+import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/client_profile_cubit.dart';
+import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/client_profile_state.dart';
 
 
 class ClientProfilePage extends StatelessWidget {
@@ -273,6 +273,7 @@ class _ClientProfileView extends StatelessWidget {
                           title: "Change Email",
                           fields: [
                             EditField(keyName: "email", label: "Email", initialValue: p.email),
+                            EditField(keyName: "phone", label: "Phone", initialValue: p.phone),
                           ],
                         );
                         if (updates != null) {
