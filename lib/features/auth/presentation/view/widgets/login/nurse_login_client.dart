@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/Repo/firebase_service-login_nurse.dart';
 import '../../../view_model/cubit/login/nurse_login_cubit.dart';
-import '../../../view_model/nurse_profile_page.dart';
+import '../../pages/profile/profile_nurse.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_button_social.dart';
 import '../custom_text_register.dart';
