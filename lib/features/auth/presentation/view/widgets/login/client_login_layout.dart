@@ -1,174 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:riaaya_app/core/widgets/custom_button.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/register/register_screen.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/custom_button_social.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/features/auth/presentation/view_model/cubit/login/Client_Login_State.dart';
+import '../../../../../../core/widgets/custom_button.dart';
+import '../../../../data/Repo/firebase_service_login_client.dart';
+import '../../../view_model/cubit/login/client_login_cubit.dart';
+import '../../pages/profile/client_profile_page.dart';
+import '../../pages/register/register_screen.dart';
 import '../Custom_text_field_login.dart';
+import '../custom_button_social.dart';
 import '../custom_text_register.dart';
 
-class ClientLoginLayout extends StatefulWidget {
+
+class ClientLoginLayout extends StatelessWidget {
   const ClientLoginLayout({super.key});
 
   @override
-  State<ClientLoginLayout> createState() => _ClientLoginLayoutState();
-}
-
-class _ClientLoginLayoutState extends State<ClientLoginLayout> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool isLoading = false;
-
-  Map<String, String?> errors = {'email': null, 'password': null};
-
-  void login() async {
-    // Validation
-    setState(() {
-      errors['email'] = emailController.text.isEmpty ? "This field is required" : null;
-      errors['password'] = passwordController.text.isEmpty ? "This field is required" : null;
-    });
-
-    if (errors['email'] != null || errors['password'] != null) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-
-      final uid = userCredential.user!.uid;
-
-      final doc = await FirebaseFirestore.instance.collection('clients').doc(uid).get();
-
-      if (!doc.exists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("User not found in database")),
-        );
-        await FirebaseAuth.instance.signOut();
-        return;
-      }
-
-      // الحساب موجود → توجيه المستخدم للـ Profile Page
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const ClientProfilePage()),
-        );
-      }
-
-    } on FirebaseAuthException catch (e) {
-      String msg;
-      if (e.code == 'user-not-found') {
-        msg = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        msg = 'Wrong password provided.';
-      } else {
-        msg = 'Auth Error: ${e.code}';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    return BlocProvider(
+      create: (_) => ClientLoginCubit(FirebaseServiceLoginClient()),
+      child: BlocConsumer<ClientLoginCubit, ClientLoginState>(
+        listener: (context, state) {
+          if (state is ClientLoginError) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
+          } else if (state is ClientLoginSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const ClientProfilePage()),
+            );
+          }
+        },
+        builder: (context, state) {
+          final cubit = context.read<ClientLoginCubit>();
+          Map<String, String?> errors = {};
+          if (state is ClientLoginValidation) errors = state.errors;
+          final isLoading = state is ClientLoginLoading;
+          final size = MediaQuery.of(context).size;
 
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
+          return Stack(
             children: [
-              SizedBox(height: size.height * 0.03),
-
-              // Email
-              CustomTextFieldLogin(
-                hinText: "Email",
-                controller: emailController,
-              ),
-              if (errors['email'] != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(errors['email']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+              SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    SizedBox(height: size.height * 0.03),
+                    CustomTextFieldLogin(
+                      hinText: "Email",
+                      controller: cubit.emailController,
+                    ),
+                    if (errors['email'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          errors['email']!,
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                    SizedBox(height: size.height * 0.03),
+                    CustomTextFieldLogin(
+                      hinText: "Password",
+                      controller: cubit.passwordController,
+                      obscureText: true,
+                    ),
+                    if (errors['password'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          errors['password']!,
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "Forgot password?",
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.03),
+                    CustomButton(
+                      text: "Login",
+                      onTap: () => cubit.login(context),
+                    ),
+                    SizedBox(height: size.height * 0.05),
+                    CustomButtonSocial(
+                      textSocial: "Continue with Google",
+                      icon: Icons.g_mobiledata,
+                    ),
+                    CustomTextRegister(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegisterScreen()),
+                        );
+                      },
+                      text: "Don't have an account? ",
+                      textColor: "Register",
+                    ),
+                  ],
                 ),
-
-              SizedBox(height: size.height * 0.03),
-
-              // Password
-              CustomTextFieldLogin(
-                hinText: "Password",
-                controller: passwordController,
-                obscureText: true,
               ),
-              if (errors['password'] != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(errors['password']!, style: const TextStyle(color: Colors.red, fontSize: 12)),
-                ),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Forgot password?",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+              if (isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  width: size.width,
+                  height: size.height,
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
                   ),
                 ),
-              ),
-
-              SizedBox(height: size.height * 0.03),
-
-              CustomButton(
-                text: "Login",
-                onTap: login,
-              ),
-
-              SizedBox(height: size.height * 0.05),
-
-              CustomButtonSocial(
-                textSocial: "Continue with Google",
-                icon: Icons.g_mobiledata,
-              ),
-
-              CustomTextRegister(
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                  );
-                },
-                text: "Don't have an account? ",
-                textColor: "Register",
-              ),
             ],
-          ),
-        ),
-
-        // Loading overlay
-        if (isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.5),
-            width: size.width,
-            height: size.height,
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
-      ],
+          );
+        },
+      ),
     );
   }
 }
