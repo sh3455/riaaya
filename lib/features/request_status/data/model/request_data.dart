@@ -1,10 +1,9 @@
-
-
 import 'package:riaaya_app/features/request_status/data/model/request_model.dart';
 
 class RequestData {
   static List<RequestModel> requests = [
     RequestModel(
+      id: '',
       title: "Medication Management",
       date: "2023-10-26",
       description:
@@ -12,6 +11,7 @@ class RequestData {
       status: RequestStatus.accepted,
     ),
     RequestModel(
+      id: '',
       title: "Wound Care",
       date: "2023-10-25",
       description:
@@ -19,6 +19,7 @@ class RequestData {
       status: RequestStatus.pending,
     ),
     RequestModel(
+      id: '',
       title: "Physical Therapy Assistance",
       date: "2023-10-24",
       description:
@@ -26,6 +27,7 @@ class RequestData {
       status: RequestStatus.accepted,
     ),
     RequestModel(
+      id: '',
       title: "Companionship & Support",
       date: "2023-10-23",
       description:
