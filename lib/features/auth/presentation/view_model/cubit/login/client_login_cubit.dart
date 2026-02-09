@@ -1,14 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import '../../../../data/Repo/firebase_service_login_client.dart';
-import '../../../../data/Repo/hive_auth_service.dart';
 import 'client_login_state.dart';
 
 class ClientLoginCubit extends Cubit<ClientLoginState> {
   final FirebaseServiceLoginClient _firebaseService;
-  final HiveAuthService _hive;
 
-  ClientLoginCubit(this._firebaseService, this._hive) : super(ClientLoginInitial());
+  ClientLoginCubit(this._firebaseService) : super(ClientLoginInitial());
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -39,11 +37,6 @@ class ClientLoginCubit extends Cubit<ClientLoginState> {
     } else {
       emit(ClientLoginSuccess());
     }
-  }
-
-  Future<void> logout() async {
-    await _firebaseService.logout();
-    emit(ClientLoginInitial());
   }
 
   @override
