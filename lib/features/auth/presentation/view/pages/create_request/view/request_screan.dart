@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/cubit/request_cubit.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/cubit/request_state.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/widgets/data_picker_field.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
+import 'package:riaaya_app/features/profile/presentation/view/pages/profile/client_profile_page.dart';
+import 'package:riaaya_app/features/profile/presentation/view/widgets/client_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
 
 import 'widgets/service_dropdown.dart';
