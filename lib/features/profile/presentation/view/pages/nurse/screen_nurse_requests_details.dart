@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:riaaya_app/features/profile/presentation/view/pages/profile/profile_nurse.dart';
+import 'package:riaaya_app/features/profile/presentation/view/widgets/nurse_profile/bottom_bar.dart';
 
 class NurseRequestDetailsScreen extends StatelessWidget {
   const NurseRequestDetailsScreen({super.key});
@@ -23,6 +25,19 @@ class NurseRequestDetailsScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
       ),
+bottomNavigationBar: NurseBottomBar(
+  initialIndex: 0,
+  onChanged: (i) {
+    if (i == 0) return;
+
+    if (i == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const NurseProfilePage()),
+      );
+    }
+  },
+),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -244,6 +259,7 @@ class _IconText extends StatelessWidget {
             style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
         ),
+        
       ],
     );
   }
