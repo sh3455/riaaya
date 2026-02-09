@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'request_state.dart';
@@ -5,23 +7,91 @@ import 'request_state.dart';
 class CreateRequestCubit extends Cubit<CreateRequestState> {
   CreateRequestCubit() : super(const CreateRequestState());
 
-  void changeServiceType(String value) {
-    emit(state.copyWith(serviceType: value));
-  }
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
 
-  void changeDate(DateTime date) {
-    emit(state.copyWith(date: date));
-  }
+  void changeServiceType(String value) =>
+      emit(state.copyWith(serviceType: value, isSuccess: false, error: null));
+  void changeDate(DateTime date) =>
+      emit(state.copyWith(date: date, isSuccess: false, error: null));
+  void changeTime(TimeOfDay time) =>
+      emit(state.copyWith(time: time, isSuccess: false, error: null));
+  void changeNotes(String notes) =>
+      emit(state.copyWith(notes: notes, isSuccess: false, error: null));
 
-  void changeTime(TimeOfDay time) {
-    emit(state.copyWith(time: time));
-  }
+  Future<void> submitRequest() async {
+    debugPrint(" submitRequest called");
 
-  void changeNotes(String notes) {
-    emit(state.copyWith(notes: notes));
-  }
+    if (state.date == null) {
+      debugPrint("date is null");
+      emit(
+        state.copyWith(
+          error: "اختار التاريخ",
+          isSubmitting: false,
+          isSuccess: false,
+        ),
+      );
+      return;
+    }
+    if (state.time == null) {
+      debugPrint(" time is null");
+      emit(
+        state.copyWith(
+          error: "اختار الوقت",
+          isSubmitting: false,
+          isSuccess: false,
+        ),
+      );
+      return;
+    }
 
-  void submitRequest() {
-    debugPrint('Request submitted!');
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    debugPrint("UID = $uid");
+    if (uid == null) {
+      emit(
+        state.copyWith(
+          error: "لازم تسجل دخول الأول",
+          isSubmitting: false,
+          isSuccess: false,
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, isSuccess: false, error: null));
+
+    try {
+      final visitAt = DateTime(
+        state.date!.year,
+        state.date!.month,
+        state.date!.day,
+        state.time!.hour,
+        state.time!.minute,
+      );
+
+      final data = {
+        ...state.toJson(),
+        'clientId': uid,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(), // ✅ مهم FieldValue (V كبيرة)
+        'visitAt': Timestamp.fromDate(visitAt),
+      };
+
+      debugPrint("DATA => $data");
+
+      await FirebaseFirestore.instance.collection('requests').add(data);
+
+      debugPrint(" Firestore add SUCCESS");
+      emit(state.copyWith(isSubmitting: false, isSuccess: true, error: null));
+    } catch (e) {
+      debugPrint(" Firestore add ERROR: $e");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          isSuccess: false,
+          error: e.toString(),
+        ),
+      );
+    }
   }
 }

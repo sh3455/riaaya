@@ -25,7 +25,7 @@ class CreateRequestScreen extends StatelessWidget {
 
 class _CreateRequestView extends StatelessWidget {
   const _CreateRequestView();
-  
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CreateRequestCubit>();
@@ -35,7 +35,8 @@ class _CreateRequestView extends StatelessWidget {
       bottomNavigationBar: AppBottomBar(
         initialIndex: 0,
         onChanged: (i) {
-          if (i == 0) return;
+          if (i == 0)
+            return;
           else if (i == 1) {
             Navigator.pushReplacement(
               context,
@@ -55,8 +56,24 @@ class _CreateRequestView extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: BlocBuilder<CreateRequestCubit, CreateRequestState>(
+        child: BlocConsumer<CreateRequestCubit, CreateRequestState>(
+          listener: (context, state) {
+            if (state.error != null) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.error!)));
+            }
+            if (state.isSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Done Request Created Successfully"),
+                ),
+              );
+            }
+          },
           builder: (context, state) {
+            final cubit = context.read<CreateRequestCubit>();
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -74,7 +91,7 @@ class _CreateRequestView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: DatePickerField(
-                        date: state?.date,
+                        date: state.date,
                         onPicked: cubit.changeDate,
                       ),
                     ),
@@ -89,7 +106,6 @@ class _CreateRequestView extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 16),
-
                 const Text('Additional Notes'),
                 const SizedBox(height: 8),
 
@@ -101,8 +117,14 @@ class _CreateRequestView extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: cubit.submitRequest,
-                    child: const Text('Submit Request'),
+                    onPressed: state.isSubmitting ? null : cubit.submitRequest,
+                    child: state.isSubmitting
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Submit Request'),
                   ),
                 ),
               ],
