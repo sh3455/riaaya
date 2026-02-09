@@ -21,7 +21,7 @@ class LoginPage extends StatelessWidget {
               children: [
                 Image.asset("assets/images/logo.png",height: size.height*0.2,),
                 Center(
-                  child: Text("Welcome Back!",style: TextStyle(
+                  child: Text("Welcome!",style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w700,
                     color: Colors.black
@@ -59,8 +59,8 @@ class LoginPage extends StatelessWidget {
                 Expanded(
                 child: TabBarView(
                   children: [
-                    SingleChildScrollView(child: ClientLoginLayout()),
-                    SingleChildScrollView(child: NurseLoginLayout()),
+                    ClientLoginLayout(),
+                    NurseLoginLayout(),
                   ],
                 ),
               ),

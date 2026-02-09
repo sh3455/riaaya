@@ -3,14 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:riaaya_app/features/auth/data/client_profile_repository.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/edit_dialog.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/field_tile.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/section_card.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/client_profile_cubit.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/client_profile_state.dart';
+import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
+
 import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
+
+import '../../../view_model/cubit/profile/client_profile_cubit.dart';
+import '../../../view_model/cubit/profile/client_profile_state.dart';
+import '../../widgets/client_profile/bottom_bar.dart';
+import '../../widgets/client_profile/edit_dialog.dart';
+import '../../widgets/client_profile/field_tile.dart';
+import '../../widgets/client_profile/section_card.dart';
 
 class ClientProfilePage extends StatelessWidget {
   const ClientProfilePage({super.key});
@@ -117,11 +119,10 @@ class _ClientProfileView extends StatelessWidget {
         },
       ),
 
-      // ✅ Navigation شغال
       bottomNavigationBar: AppBottomBar(
         initialIndex: 2,
         onChanged: (i) {
-          if (i == 2) return; // انت في Profile
+          if (i == 2) return;
 
           if (i == 0) {
             // Navigator.pushReplacement(

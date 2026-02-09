@@ -1,17 +1,19 @@
 import 'package:bloc/bloc.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/login/Client_Login_State.dart';
-import '../../../../data/Repo/firebase_service_login_client.dart';
 import 'package:flutter/material.dart';
+import '../../../../data/Repo/firebase_service_login_client.dart';
+import '../../../../data/Repo/hive_auth_service.dart';
+import 'client_login_state.dart';
 
 class ClientLoginCubit extends Cubit<ClientLoginState> {
   final FirebaseServiceLoginClient _firebaseService;
+  final HiveAuthService _hive;
 
-  ClientLoginCubit(this._firebaseService) : super(ClientLoginInitial());
+  ClientLoginCubit(this._firebaseService, this._hive) : super(ClientLoginInitial());
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void login(BuildContext context) async {
+  Future<void> login(BuildContext context) async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
@@ -27,13 +29,21 @@ class ClientLoginCubit extends Cubit<ClientLoginState> {
 
     emit(ClientLoginLoading());
 
-    final error = await _firebaseService.loginClient(email: email, password: password);
+    final error = await _firebaseService.loginClient(
+      email: email,
+      password: password,
+    );
 
     if (error != null) {
       emit(ClientLoginError(error));
     } else {
       emit(ClientLoginSuccess());
     }
+  }
+
+  Future<void> logout() async {
+    await _firebaseService.logout();
+    emit(ClientLoginInitial());
   }
 
   @override

@@ -1,5 +1,5 @@
 
-import 'package:riaaya_app/features/auth/presentation/view_model/client_profile.dart';
+import 'package:riaaya_app/features/profile/presentation/view_model/cubit/client_profile.dart';
 
 sealed class ClientProfileState {
   const ClientProfileState();
@@ -15,7 +15,7 @@ class ClientProfileLoading extends ClientProfileState {
 
 class ClientProfileLoaded extends ClientProfileState {
   final ClientProfile profile;
-  final bool isSaving; // عشان نعمل disable للزرار وقت الحفظ
+  final bool isSaving;
   const ClientProfileLoaded(this.profile, {this.isSaving = false});
 
   ClientProfileLoaded copyWith({ClientProfile? profile, bool? isSaving}) {

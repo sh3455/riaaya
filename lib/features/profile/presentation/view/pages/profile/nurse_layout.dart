@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/nurse_requests.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/profile_nurse.dart';
+import 'package:riaaya_app/features/profile/presentation/view/pages/profile/profile_nurse.dart';
+
+import 'nurse_requests.dart';
 
 
 
@@ -12,7 +13,7 @@ class NurseLayout extends StatefulWidget {
 }
 
 class _NurseLayoutState extends State<NurseLayout> {
-  int _index = 0; // ✅ لازم 0 أو 1 فقط
+  int _index = 0;
 
   final List<Widget> _pages = const [
     NurseRequestsPage(),

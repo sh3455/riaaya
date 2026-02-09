@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:riaaya_app/core/theme/color/app_color.dart';
-import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/request_status/data/model/request_data.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/widgets/request_cord.dart';
+
+import '../../../../profile/presentation/view/pages/profile/client_profile_page.dart';
+import '../../../../profile/presentation/view/widgets/client_profile/bottom_bar.dart';
 
 class RequestStatusScreen extends StatelessWidget {
   const RequestStatusScreen({super.key});

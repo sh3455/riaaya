@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/client_profile.dart';
+import 'package:riaaya_app/features/profile/presentation/view_model/cubit/client_profile.dart';
 
 class ClientProfileRepository {
   final FirebaseFirestore firestore;
