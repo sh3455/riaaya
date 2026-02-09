@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/features/profile/presentation/view_model/cubit/profile/nurse_profile_cubit.dart';
 
-import '../../../view_model/cubit/profile/nurse_profile_cubit.dart';
 import 'nurse_profile_view.dart';
 
 class NurseProfilePage extends StatelessWidget {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/features/profile/presentation/view/pages/profile/nurse_requests.dart';
+import 'package:riaaya_app/features/profile/presentation/view/widgets/nurse_profile/bottom_bar.dart';
 
 import '../../../view_model/cubit/profile/nurse_profile_cubit.dart';
 import '../../../view_model/cubit/profile/nurse_profile_state.dart';
@@ -25,6 +27,20 @@ class NurseProfileView extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
         ),
       ),
+      bottomNavigationBar: NurseBottomBar(
+        initialIndex: 1,
+        onChanged: (i) {
+          if (i == 1) return;
+
+          if (i == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const NurseRequestsPage()),
+            );
+          }
+        },
+      ),
+
       body: BlocConsumer<NurseProfileCubit, NurseProfileState>(
         listener: (context, state) {
           if (state is NurseProfileError) {
