@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/core/widgets/custom_button.dart';
 import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/request_screan.dart';
-
 import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
-
 import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
-
+import '../../../../../auth/data/Repo/hive_auth_service.dart';
+import '../../../../../auth/presentation/view/widgets/login/client_login_layout.dart';
 import '../../../view_model/cubit/profile/client_profile_cubit.dart';
 import '../../../view_model/cubit/profile/client_profile_state.dart';
 import '../../widgets/client_profile/bottom_bar.dart';
@@ -21,13 +21,10 @@ class ClientProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const bg = Color(0xFFF5F6FF);
-
     final uid = FirebaseAuth.instance.currentUser?.uid;
-
     if (uid == null) {
       return const Scaffold(body: Center(child: Text("Not logged in")));
     }
-
     return RepositoryProvider(
       create: (_) => ClientProfileRepository(FirebaseFirestore.instance),
       child: BlocProvider(
@@ -48,10 +45,8 @@ class _ClientProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B6CFF);
-
     return Scaffold(
       backgroundColor: bg,
-
       appBar: AppBar(
         backgroundColor: bg,
         elevation: 0,
@@ -61,13 +56,10 @@ class _ClientProfileView extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
         ),
       ),
-
       body: BlocConsumer<ClientProfileCubit, ClientProfileState>(
         listener: (context, state) {
           if (state is ClientProfileError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         builder: (context, state) {
@@ -77,32 +69,28 @@ class _ClientProfileView extends StatelessWidget {
           if (state is ClientProfileError) {
             return Center(child: Text(state.message));
           }
-
           final loaded = state as ClientProfileLoaded;
           final p = loaded.profile;
-
           return LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 720;
-
               final content = ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 920),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 90),
-                  child: isWide
-                      ? Row(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+                  child: Column(
+                    children: [
+                      if (isWide)
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: _leftColumn(context, p, loaded.isSaving),
-                            ),
+                            Expanded(child: _leftColumn(context, p, loaded.isSaving)),
                             const SizedBox(width: 14),
-                            Expanded(
-                              child: _rightColumn(context, p, loaded.isSaving),
-                            ),
+                            Expanded(child: _rightColumn(context, p, loaded.isSaving)),
                           ],
                         )
-                      : Column(
+                      else
+                        Column(
                           children: [
                             _profilePictureCard(primary),
                             const SizedBox(height: 14),
@@ -111,37 +99,41 @@ class _ClientProfileView extends StatelessWidget {
                             _contactCard(context, p, loaded.isSaving),
                           ],
                         ),
+                      const SizedBox(height: 20),
+                      CustomButton(
+                        text: "Logout",
+                        onTap: () async {
+                          final hiveService = HiveAuthService();
+                          await hiveService.logout();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ClientLoginLayout()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
-
               return Center(child: SingleChildScrollView(child: content));
             },
           );
         },
       ),
-
       bottomNavigationBar: AppBottomBar(
         initialIndex: 2,
         onChanged: (i) {
           if (i == 2) return;
-
           if (i == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
-            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const CreateRequestScreen()));
           } else if (i == 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const RequestStatusScreen()),
-            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const RequestStatusScreen()));
           }
         },
       ),
     );
   }
 
-  // ---------- Wide Layout ----------
   Widget _leftColumn(BuildContext context, p, bool saving) {
     const primary = Color(0xFF5B6CFF);
     return Column(
@@ -157,27 +149,17 @@ class _ClientProfileView extends StatelessWidget {
     return Column(children: [_contactCard(context, p, saving)]);
   }
 
-  // ---------- Cards ----------
   Widget _profilePictureCard(Color primary) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 18, offset: const Offset(0, 8))],
       ),
       child: Column(
         children: [
-          const Text(
-            "Profile Picture",
-            style: TextStyle(fontWeight: FontWeight.w800),
-          ),
+          const Text("Profile Picture", style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           Container(
             width: 86,
@@ -187,24 +169,17 @@ class _ClientProfileView extends StatelessWidget {
               color: primary.withOpacity(.12),
               border: Border.all(color: primary.withOpacity(.30), width: 2),
             ),
-            child: Center(
-              child: Icon(Icons.person_rounded, color: primary, size: 44),
-            ),
+            child: Center(child: Icon(Icons.person_rounded, color: primary, size: 44)),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
               foregroundColor: primary,
-              side: BorderSide(color: primary, width: 1.4),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              side: BorderSide(color: primary.withOpacity(.30), width: 1.4),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: const Text(
-              "Change Profile Photo",
-              style: TextStyle(fontWeight: FontWeight.w900),
-            ),
+            child: const Text("Change Profile Photo", style: TextStyle(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -217,26 +192,16 @@ class _ClientProfileView extends StatelessWidget {
       onEdit: saving
           ? () {}
           : () async {
-              final updates = await showEditDialog(
-                context: context,
-                title: "Edit Personal Details",
-                fields: [
-                  EditField(
-                    keyName: "name",
-                    label: "Name",
-                    initialValue: p.name,
-                  ),
-                  EditField(
-                    keyName: "birth",
-                    label: "Birth (YYYY-MM-DD)",
-                    initialValue: p.birth,
-                  ),
-                ],
-              );
-              if (updates != null) {
-                context.read<ClientProfileCubit>().updateFields(updates);
-              }
-            },
+        final updates = await showEditDialog(
+          context: context,
+          title: "Edit Personal Details",
+          fields: [
+            EditField(keyName: "name", label: "Name", initialValue: p.name),
+            EditField(keyName: "birth", label: "Birth (YYYY-MM-DD)", initialValue: p.birth),
+          ],
+        );
+        if (updates != null) context.read<ClientProfileCubit>().updateFields(updates);
+      },
       children: [
         FieldTile(label: "Name", value: p.name),
         const SizedBox(height: 10),
@@ -247,40 +212,27 @@ class _ClientProfileView extends StatelessWidget {
 
   Widget _contactCard(BuildContext context, p, bool saving) {
     const primary = Color(0xFF5B6CFF);
-
     return SectionCard(
       title: "Contact Information",
       onEdit: saving
           ? () {}
           : () async {
-              final updates = await showEditDialog(
-                context: context,
-                title: "Edit Contact Info",
-                fields: [
-                  EditField(
-                    keyName: "email",
-                    label: "Email",
-                    initialValue: p.email,
-                  ),
-                  EditField(
-                    keyName: "phone",
-                    label: "Phone",
-                    initialValue: p.phone,
-                  ),
-                ],
-              );
-              if (updates != null) {
-                context.read<ClientProfileCubit>().updateFields(updates);
-              }
-            },
+        final updates = await showEditDialog(
+          context: context,
+          title: "Edit Contact Info",
+          fields: [
+            EditField(keyName: "email", label: "Email", initialValue: p.email),
+            EditField(keyName: "phone", label: "Phone", initialValue: p.phone),
+          ],
+        );
+        if (updates != null) context.read<ClientProfileCubit>().updateFields(updates);
+      },
       children: [
         FieldTile(label: "Email", value: p.email),
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(
-              child: FieldTile(label: "Phone Number", value: p.phone),
-            ),
+            Expanded(child: FieldTile(label: "Phone Number", value: p.phone)),
             const SizedBox(width: 10),
             SizedBox(
               height: 46,
@@ -288,39 +240,22 @@ class _ClientProfileView extends StatelessWidget {
                 onPressed: saving
                     ? null
                     : () async {
-                        final updates = await showEditDialog(
-                          context: context,
-                          title: "Change Email",
-                          fields: [
-                            EditField(
-                              keyName: "email",
-                              label: "Email",
-                              initialValue: p.email,
-                            ),
-                            EditField(
-                              keyName: "phone",
-                              label: "Phone",
-                              initialValue: p.phone,
-                            ),
-                          ],
-                        );
-                        if (updates != null) {
-                          context.read<ClientProfileCubit>().updateFields(
-                            updates,
-                          );
-                        }
-                      },
+                  final updates = await showEditDialog(
+                    context: context,
+                    title: "Change Email",
+                    fields: [
+                      EditField(keyName: "email", label: "Email", initialValue: p.email),
+                      EditField(keyName: "phone", label: "Phone", initialValue: p.phone),
+                    ],
+                  );
+                  if (updates != null) context.read<ClientProfileCubit>().updateFields(updates);
+                },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primary,
                   side: const BorderSide(color: primary, width: 1.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text(
-                  "Change Email",
-                  style: TextStyle(fontWeight: FontWeight.w900),
-                ),
+                child: const Text("Change Email", style: TextStyle(fontWeight: FontWeight.w900)),
               ),
             ),
           ],

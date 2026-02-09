@@ -1,38 +1,16 @@
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveAuthService {
-  static const String _boxName = 'authBox';
-  static const String _keyIsLoggedIn = 'isLoggedIn';
-  static const String _keyUserType = 'userType';
-  static const String _keyUid = 'uid';
+  final _box = Hive.box('authBox');
 
-  static Future<void> init() async {
-    await Hive.openBox(_boxName);
+  Future<void> saveUser({required String uid}) async {
+    await _box.put('uid', uid);
+    await _box.put('isLoggedIn', true);
   }
 
-  Future<void> saveLogin({required String userType, required String uid}) async {
-    final box = Hive.box(_boxName);
-    await box.put(_keyIsLoggedIn, true);
-    await box.put(_keyUserType, userType);
-    await box.put(_keyUid, uid);
-  }
+  bool isLoggedIn() => _box.get('isLoggedIn', defaultValue: false);
 
-  Future<void> clearLogin() async {
-    final box = Hive.box(_boxName);
-    await box.clear();
-  }
+  String? getUid() => _box.get('uid');
 
-  Map<String, dynamic> getLoginStatus() {
-    final box = Hive.box(_boxName);
-    return {
-      'isLoggedIn': box.get(_keyIsLoggedIn, defaultValue: false),
-      'userType': box.get(_keyUserType, defaultValue: null),
-      'uid': box.get(_keyUid, defaultValue: null),
-    };
-  }
-
-  bool get isClient {
-    final status = getLoginStatus();
-    return status['isLoggedIn'] == true && status['userType'] == 'client';
-  }
+  Future<void> logout() async => await _box.clear();
 }

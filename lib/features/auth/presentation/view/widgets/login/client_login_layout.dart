@@ -20,9 +20,9 @@ class ClientLoginLayout extends StatelessWidget {
       child: BlocConsumer<ClientLoginCubit, ClientLoginState>(
         listener: (context, state) {
           if (state is ClientLoginError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
           if (state is ClientLoginSuccess) {
             Navigator.pushReplacement(
@@ -43,7 +43,10 @@ class ClientLoginLayout extends StatelessWidget {
             body: Stack(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 20,
+                  ),
                   child: Column(
                     children: [
                       SizedBox(height: size.height * 0.03),
@@ -56,7 +59,10 @@ class ClientLoginLayout extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             errors['email']!,
-                            style: const TextStyle(color: Colors.red, fontSize: 12),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       SizedBox(height: size.height * 0.03),
@@ -70,7 +76,10 @@ class ClientLoginLayout extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             errors['password']!,
-                            style: const TextStyle(color: Colors.red, fontSize: 12),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       Align(
@@ -79,7 +88,10 @@ class ClientLoginLayout extends StatelessWidget {
                           onPressed: () {},
                           child: const Text(
                             "Forgot password?",
-                            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -97,7 +109,9 @@ class ClientLoginLayout extends StatelessWidget {
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
                           );
                         },
                         text: "Don't have an account? ",

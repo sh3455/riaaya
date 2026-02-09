@@ -14,7 +14,6 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
   NurseProfileCubit({required this.uid, required this.firestore})
     : super(const NurseProfileLoading());
 
-  // تحميل الداتا
   void start() {
     _sub?.cancel();
 
@@ -32,12 +31,10 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
         );
   }
 
-  // تحديث الداتا
   Future<void> updateFields(Map<String, dynamic> updates) async {
     final current = state;
     if (current is! NurseProfileLoaded) return;
 
-    // تنظيف القيم
     final clean = <String, dynamic>{};
     updates.forEach((k, v) {
       final value = (v ?? '').toString().trim();
@@ -45,7 +42,6 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
     });
     if (clean.isEmpty) return;
 
-    // ✅ تحديث محلي فورًا (Optimistic)
     final merged = Map<String, dynamic>.from(current.data)..addAll(clean);
     emit(NurseProfileLoaded(data: merged, isSaving: true));
 
@@ -55,11 +51,9 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
           .doc(uid)
           .set(clean, SetOptions(merge: true));
 
-      // ✅ خلّصنا حفظ
       emit(NurseProfileLoaded(data: merged, isSaving: false));
     } catch (e) {
       emit(NurseProfileError("Update failed: $e"));
-      // رجّع الحالة القديمة
       emit(current.copyWith(isSaving: false));
     }
   }

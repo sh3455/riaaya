@@ -117,11 +117,10 @@ class _ClientProfileView extends StatelessWidget {
         },
       ),
 
-      // ✅ Navigation شغال
       bottomNavigationBar: AppBottomBar(
         initialIndex: 2,
         onChanged: (i) {
-          if (i == 2) return; // انت في Profile
+          if (i == 2) return;
 
           if (i == 0) {
             // Navigator.pushReplacement(
