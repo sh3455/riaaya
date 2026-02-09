@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/login/client_login_cubit.dart';
-import '../../../../../profile/presentation/view/pages/profile/client_profile_page.dart';
 import '../../../../data/Repo/firebase_service_login_client.dart';
+import '../../../../../profile/presentation/view/pages/profile/client_profile_page.dart';
+import '../../../view_model/cubit/login/client_login_cubit.dart';
 import '../../../view_model/cubit/login/client_login_state.dart';
 import '../Custom_text_field_login.dart';
 import '../custom_button_social.dart';
 import '../custom_text_register.dart';
-import '../../pages/register/register_screen.dart';
 import '../../../../../../core/widgets/custom_button.dart';
+import '../../pages/register/register_screen.dart';
 
 class ClientLoginLayout extends StatelessWidget {
   const ClientLoginLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final firebaseService = FirebaseServiceLoginClient();
-
     return BlocProvider(
-      create: (_) => ClientLoginCubit(firebaseService),
+      create: (_) => ClientLoginCubit(FirebaseServiceLoginClient()),
       child: BlocConsumer<ClientLoginCubit, ClientLoginState>(
         listener: (context, state) {
           if (state is ClientLoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
-          } else if (state is ClientLoginSuccess) {
+          }
+          if (state is ClientLoginSuccess) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const ClientProfilePage()),
@@ -34,10 +33,11 @@ class ClientLoginLayout extends StatelessWidget {
         },
         builder: (context, state) {
           final cubit = context.read<ClientLoginCubit>();
+          final size = MediaQuery.of(context).size;
+
           Map<String, String?> errors = {};
           if (state is ClientLoginValidation) errors = state.errors;
-          bool isLoading = state is ClientLoginLoading;
-          var size = MediaQuery.of(context).size;
+          final isLoading = state is ClientLoginLoading;
 
           return Scaffold(
             body: Stack(
@@ -97,7 +97,7 @@ class ClientLoginLayout extends StatelessWidget {
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
                           );
                         },
                         text: "Don't have an account? ",

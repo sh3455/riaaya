@@ -1,17 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'hive_auth_service.dart';
 
 class FirebaseServiceLoginClient {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final HiveAuthService _hive = HiveAuthService();
 
-  Future<String?> loginClient({required String email, required String password}) async {
+  Future<String?> loginClient({
+    required String email,
+    required String password,
+  }) async {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
+        email: email,
+        password: password,
       );
 
       final uid = userCredential.user!.uid;
@@ -22,8 +23,6 @@ class FirebaseServiceLoginClient {
         return "User not found in database";
       }
 
-      // حفظ login في Hive
-      await _hive.saveLogin(userType: 'client', uid: uid);
       return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') return 'No user found for that email.';
@@ -36,6 +35,5 @@ class FirebaseServiceLoginClient {
 
   Future<void> logout() async {
     await _auth.signOut();
-    await _hive.clearLogin();
   }
 }

@@ -4,9 +4,9 @@ import '../../../../data/Repo/firebase_service_login_client.dart';
 import 'client_login_state.dart';
 
 class ClientLoginCubit extends Cubit<ClientLoginState> {
-  final FirebaseServiceLoginClient _firebaseService;
+  final FirebaseServiceLoginClient firebaseService;
 
-  ClientLoginCubit(this._firebaseService) : super(ClientLoginInitial());
+  ClientLoginCubit(this.firebaseService) : super(ClientLoginInitial());
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -15,19 +15,19 @@ class ClientLoginCubit extends Cubit<ClientLoginState> {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    Map<String, String?> errors = {
+    final errors = <String, String?>{
       'email': email.isEmpty ? 'This field is required' : null,
       'password': password.isEmpty ? 'This field is required' : null,
     };
 
-    if (errors['email'] != null || errors['password'] != null) {
+    if (errors.values.any((e) => e != null)) {
       emit(ClientLoginValidation(errors));
       return;
     }
 
     emit(ClientLoginLoading());
 
-    final error = await _firebaseService.loginClient(
+    final error = await firebaseService.loginClient(
       email: email,
       password: password,
     );
