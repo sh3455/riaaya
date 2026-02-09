@@ -8,9 +8,8 @@ import 'features/auth/presentation/view/pages/login/login_page.dart';
 import 'features/auth/presentation/view/pages/splash/splash_screen.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
- await Hive.openBox("authBox");
+  await Hive.openBox("authBox");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
