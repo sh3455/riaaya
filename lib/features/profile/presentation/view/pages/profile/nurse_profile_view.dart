@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/edit_dialog.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/field_tile.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/section_card.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/nurse_profile/nurse_header_card.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/nurse_profile_cubit.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/cubit/profile/nurse_profile_state.dart';
+
+import '../../../view_model/cubit/profile/nurse_profile_cubit.dart';
+import '../../../view_model/cubit/profile/nurse_profile_state.dart';
+import '../../widgets/client_profile/edit_dialog.dart';
+import '../../widgets/client_profile/field_tile.dart';
+import '../../widgets/client_profile/section_card.dart';
+import '../../widgets/nurse_profile/nurse_header_card.dart';
 
 class NurseProfileView extends StatelessWidget {
   final Color bg;
@@ -54,7 +55,6 @@ class NurseProfileView extends StatelessWidget {
             builder: (context, c) {
               final w = c.maxWidth;
 
-              // ✅ Responsive breakpoints
               final isTablet = w >= 720;
               final isDesktop = w >= 1024;
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:riaaya_app/features/auth/data/client_profile_repository.dart';
-import 'package:riaaya_app/features/auth/presentation/view_model/client_profile.dart';
+import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
+import 'package:riaaya_app/features/profile/presentation/view_model/cubit/client_profile.dart';
 
 import 'client_profile_state.dart';
 
