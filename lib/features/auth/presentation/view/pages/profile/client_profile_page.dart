@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:riaaya_app/features/auth/data/client_profile_repository.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/request_screan.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/edit_dialog.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/field_tile.dart';
@@ -124,10 +125,10 @@ class _ClientProfileView extends StatelessWidget {
           if (i == 2) return; // انت في Profile
 
           if (i == 0) {
-            // Navigator.pushReplacement(
-            //   context
-            //   // MaterialPageRoute(builder: (_) => const ClientCreatePage()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
+            );
           } else if (i == 1) {
             Navigator.pushReplacement(
               context,

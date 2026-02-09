@@ -1,8 +1,11 @@
-import 'package:create_request/features/create_request/cubit/request_cubit.dart';
-import 'package:create_request/features/create_request/cubit/request_state.dart';
-import 'package:create_request/features/create_request/view/widgets/data_picker_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/cubit/request_cubit.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/cubit/request_state.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/widgets/data_picker_field.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/profile/client_profile_page.dart';
+import 'package:riaaya_app/features/auth/presentation/view/widgets/client_profile/bottom_bar.dart';
+import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
 
 import 'widgets/service_dropdown.dart';
 import 'widgets/time_picker_field.dart';
@@ -22,15 +25,33 @@ class CreateRequestScreen extends StatelessWidget {
 
 class _CreateRequestView extends StatelessWidget {
   const _CreateRequestView();
-
+  
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CreateRequestCubit>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Request'),
-        centerTitle: true,
+      appBar: AppBar(title: const Text('Create Request'), centerTitle: true),
+      bottomNavigationBar: AppBottomBar(
+        initialIndex: 0,
+        onChanged: (i) {
+          if (i == 0) return;
+          else if (i == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RequestStatusScreen(),
+              ),
+            );
+          } else if (i == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ClientProfilePage(),
+              ),
+            );
+          }
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -53,7 +74,7 @@ class _CreateRequestView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: DatePickerField(
-                        date: state.date,
+                        date: state?.date,
                         onPicked: cubit.changeDate,
                       ),
                     ),
