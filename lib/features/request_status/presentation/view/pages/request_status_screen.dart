@@ -22,8 +22,7 @@ class RequestStatusScreen extends StatelessWidget {
       bottomNavigationBar: AppBottomBar(
         initialIndex: 1,
         onChanged: (i) {
-          if (i == 1)
-            return;
+          if (i == 1) return;
           if (i == 0) {
             Navigator.pushReplacement(
               context,
@@ -31,9 +30,7 @@ class RequestStatusScreen extends StatelessWidget {
                 builder: (context) => const CreateRequestScreen(),
               ),
             );
-          }
-          
-          else if (i == 2) {
+          } else if (i == 2) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -46,10 +43,27 @@ class RequestStatusScreen extends StatelessWidget {
 
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView.builder(
-          itemCount: RequestData.requests.length,
-          itemBuilder: (context, index) {
-            return RequestCard(request: RequestData.requests[index]);
+        child: FutureBuilder(
+          future: RequestData.getRequestsOnce(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final requests = snapshot.data!;
+            if (requests.isEmpty) {
+              return const Center(child: Text("No requests yet"));
+            }
+
+            return ListView.builder(
+              itemCount: requests.length,
+              itemBuilder: (context, index) {
+                return RequestCard(request: requests[index]);
+              },
+            );
           },
         ),
       ),
