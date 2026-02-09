@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riaaya_app/core/theme/color/app_color.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/request_screan.dart';
 import 'package:riaaya_app/features/request_status/data/model/request_data.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/widgets/request_cord.dart';
 
@@ -23,9 +24,15 @@ class RequestStatusScreen extends StatelessWidget {
         onChanged: (i) {
           if (i == 1)
             return;
-          // if (i == 0) {
-          //   Navigator.pushReplacementNamed(context, '/clientCreate');
-          // }
+          if (i == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CreateRequestScreen(),
+              ),
+            );
+          }
+          
           else if (i == 2) {
             Navigator.pushReplacement(
               context,

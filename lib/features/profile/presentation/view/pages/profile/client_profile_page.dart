@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/create_request/view/request_screan.dart';
 
 import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
 
@@ -125,10 +126,10 @@ class _ClientProfileView extends StatelessWidget {
           if (i == 2) return;
 
           if (i == 0) {
-            // Navigator.pushReplacement(
-            //   context
-            //   // MaterialPageRoute(builder: (_) => const ClientCreatePage()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
+            );
           } else if (i == 1) {
             Navigator.pushReplacement(
               context,
