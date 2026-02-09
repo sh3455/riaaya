@@ -75,6 +75,7 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(), // ✅ مهم FieldValue (V كبيرة)
         'visitAt': Timestamp.fromDate(visitAt),
+        'nurseId': null,
       };
 
       debugPrint("DATA => $data");
