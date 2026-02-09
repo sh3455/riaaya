@@ -1,38 +1,53 @@
-import 'package:riaaya_app/features/request_status/data/model/request_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'request_model.dart';
 
 class RequestData {
-  static List<RequestModel> requests = [
-    RequestModel(
-      id: '',
-      title: "Medication Management",
-      date: "2023-10-26",
-      description:
-          "Daily insulin administration and vital signs monitoring at 9 AM.",
-      status: RequestStatus.accepted,
-    ),
-    RequestModel(
-      id: '',
-      title: "Wound Care",
-      date: "2023-10-25",
-      description:
-          "Post-operative dressing change for knee surgery. Requires sterile technique.",
-      status: RequestStatus.pending,
-    ),
-    RequestModel(
-      id: '',
-      title: "Physical Therapy Assistance",
-      date: "2023-10-24",
-      description:
-          "Assistance with prescribed exercises to improve mobility, three times a week.",
-      status: RequestStatus.accepted,
-    ),
-    RequestModel(
-      id: '',
-      title: "Companionship & Support",
-      date: "2023-10-23",
-      description:
-          "Seeking a kind individual for light conversation and emotional support for 2 hours daily.",
-      status: RequestStatus.pending,
-    ),
-  ];
+  // ✅ Stream: يسمع طلبات العميل الحالي فقط (بدون index)
+  static Stream<List<RequestModel>> requestsStream() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      return const Stream.empty();
+    }
+
+    return FirebaseFirestore.instance
+        .collection('requests')
+        .where('clientId', isEqualTo: uid) // ✅ فلترة
+        .snapshots()
+        .map((snap) {
+      final list = snap.docs
+          .map((doc) => RequestModel.fromMap(doc.id, doc.data()))
+          .toList();
+
+      // ✅ ترتيب محلي بدل orderBy (عشان مانحتاجش index)
+      list.sort((a, b) {
+        final aDate = a.date;
+        final bDate = b.date;
+        return bDate.compareTo(aDate); // الأحدث الأول
+      });
+
+      return list;
+    });
+  }
+
+  // ✅ Future: تحميل مرة واحدة (بدون index)
+  static Future<List<RequestModel>> getRequestsOnce() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return [];
+
+    final snap = await FirebaseFirestore.instance
+        .collection('requests')
+        .where('clientId', isEqualTo: uid)
+        .get();
+
+    final list = snap.docs
+        .map((doc) => RequestModel.fromMap(doc.id, doc.data()))
+        .toList();
+
+    list.sort((a, b) => b.date.compareTo(a.date));
+
+    return list;
+  }
 }
