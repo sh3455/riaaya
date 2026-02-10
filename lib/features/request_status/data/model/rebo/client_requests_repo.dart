@@ -6,16 +6,23 @@ class ClientRequestsRepo {
   final FirebaseFirestore firestore;
   ClientRequestsRepo(this.firestore);
 
+  /// 🔹 يجيب طلبات العميل الحالي
   Future<List<RequestModel>> getMyRequests() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return [];
 
     final snap = await firestore
         .collection('requests')
         .where('clientId', isEqualTo: uid)
         .get();
 
-    return snap.docs
-        .map((d) => RequestModel.fromMap(d.id, d.data()))
+    final list = snap.docs
+        .map((doc) => RequestModel.fromMap(doc.id, doc.data()))
         .toList();
+
+    // ترتيب محلي (الأحدث الأول)
+    list.sort((a, b) => b.date.compareTo(a.date));
+
+    return list;
   }
 }

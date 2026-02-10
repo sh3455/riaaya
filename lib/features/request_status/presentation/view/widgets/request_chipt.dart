@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:riaaya_app/features/request_status/data/model/request_model.dart';
+import '../../../data/model/request_model.dart';
 
 class StatusChip extends StatelessWidget {
   final RequestStatus status;
@@ -10,7 +10,9 @@ class StatusChip extends StatelessWidget {
     final isPending = status == RequestStatus.pending;
 
     final text = isPending ? "Pending" : "Accepted";
-    final icon = isPending ? Icons.hourglass_bottom_rounded : Icons.check_circle_rounded;
+    final icon = isPending
+        ? Icons.hourglass_bottom_rounded
+        : Icons.check_circle_rounded;
     final color = isPending ? Colors.orange : Colors.green;
 
     return Container(

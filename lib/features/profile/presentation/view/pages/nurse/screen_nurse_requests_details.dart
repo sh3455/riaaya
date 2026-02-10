@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:riaaya_app/features/profile/presentation/view/pages/profile/profile_nurse.dart';
 import 'package:riaaya_app/features/profile/presentation/view/widgets/nurse_profile/bottom_bar.dart';
+import 'package:riaaya_app/features/request_status/data/model/request_model.dart';
 
 class NurseRequestDetailsScreen extends StatelessWidget {
-  const NurseRequestDetailsScreen({super.key});
+  final RequestModel request;
+
+  /// اختياري: لو عايز نفس شاشة التفاصيل تعمل accept/decline من هنا
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
+
+  const NurseRequestDetailsScreen({
+    super.key,
+    required this.request,
+    this.onAccept,
+    this.onDecline,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final statusText = request.status == RequestStatus.accepted
+        ? "Accepted"
+        : "Pending";
+    final statusColor = request.status == RequestStatus.accepted
+        ? Colors.green
+        : Colors.orange;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
 
@@ -15,9 +34,7 @@ class NurseRequestDetailsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
         title: const Text(
@@ -25,19 +42,19 @@ class NurseRequestDetailsScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
       ),
-bottomNavigationBar: NurseBottomBar(
-  initialIndex: 0,
-  onChanged: (i) {
-    if (i == 0) return;
 
-    if (i == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const NurseProfilePage()),
-      );
-    }
-  },
-),
+      bottomNavigationBar: NurseBottomBar(
+        initialIndex: 0,
+        onChanged: (i) {
+          if (i == 0) return;
+          if (i == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const NurseProfilePage()),
+            );
+          }
+        },
+      ),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -57,32 +74,73 @@ bottomNavigationBar: NurseBottomBar(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // ===== Header =====
               Row(
                 children: [
                   const CircleAvatar(
                     radius: 26,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150?img=32",
+                    backgroundColor: Color(0xFFE8F0FF),
+                    child: Icon(
+                      Icons.medical_services_outlined,
+                      color: Color(0xFF2F6BFF),
+                      size: 26,
                     ),
                   ),
                   const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Emily Watson",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          request.title.isEmpty ? "Request" : request.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "GC-2023-001",
-                        style: TextStyle(fontSize: 13, color: Colors.black54),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          request.id.isEmpty ? "-" : request.id,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(.12),
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: statusColor.withOpacity(.35)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          request.status == RequestStatus.accepted
+                              ? Icons.check_circle_rounded
+                              : Icons.hourglass_bottom_rounded,
+                          size: 16,
+                          color: statusColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          statusText,
+                          style: TextStyle(
+                            color: statusColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -90,7 +148,7 @@ bottomNavigationBar: NurseBottomBar(
               const SizedBox(height: 20),
               const Divider(),
 
-              // Service Details
+              // ===== Service Details =====
               const SizedBox(height: 16),
               const Text(
                 "Service Details",
@@ -100,56 +158,58 @@ bottomNavigationBar: NurseBottomBar(
 
               _InfoRow(
                 icon: Icons.home_outlined,
-                title: "Post-Surgery Care",
-                description:
-                    "Assistance with wound care, medication management, and mobility support after knee surgery.",
+                title: "Service",
+                description: request.title.isEmpty ? "-" : request.title,
               ),
 
               const SizedBox(height: 14),
 
               _InfoRow(
                 icon: Icons.note_alt_outlined,
-                title: "Additional Notes",
-                description:
-                    "Client requires assistance with daily exercises. Has a friendly small dog at home. Please be mindful of dietary restrictions (vegetarian).",
+                title: "Notes",
+                description: request.description.isEmpty
+                    ? "-"
+                    : request.description,
               ),
 
               const SizedBox(height: 22),
               const Divider(),
 
-              // Schedule & Location
+              // ===== Schedule & IDs =====
               const SizedBox(height: 16),
               const Text(
-                "Schedule & Location",
+                "Schedule & Info",
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 14),
 
               _IconText(
                 icon: Icons.calendar_today_outlined,
-                text: "Monday, December 18, 2023",
+                text: request.date.isEmpty ? "-" : request.date,
               ),
               const SizedBox(height: 10),
 
               _IconText(
-                icon: Icons.access_time_outlined,
-                text: "09:00 AM - 01:00 PM (4 hours)",
+                icon: Icons.person_outline,
+                text:
+                    "ClientId: ${request.clientId.isEmpty ? "-" : request.clientId}",
               ),
               const SizedBox(height: 10),
 
               _IconText(
-                icon: Icons.location_on_outlined,
-                text: "123 Elm Street, Springfield, IL 62704",
+                icon: Icons.badge_outlined,
+                text:
+                    "NurseId: ${(request.nurseId ?? "").isEmpty ? "-" : request.nurseId}",
               ),
 
               const SizedBox(height: 26),
 
-              // Buttons
+              // ===== Buttons =====
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: onAccept,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2F6BFF),
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -169,7 +229,7 @@ bottomNavigationBar: NurseBottomBar(
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: onDecline,
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -259,7 +319,6 @@ class _IconText extends StatelessWidget {
             style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
         ),
-        
       ],
     );
   }

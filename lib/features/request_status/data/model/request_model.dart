@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum RequestStatus { accepted, pending }
 
 class RequestModel {
-  final String id; // doc id
-  final String title;        // للعرض في UI
-  final String description;  // للعرض في UI
-  final String date;         // للعرض في UI
+  final String id;
+  final String title;
+  final String description;
+  final String date; // هنخليه String جاهز للعرض
   final RequestStatus status;
+  final String clientId;
+  final String? nurseId;
 
   RequestModel({
     required this.id,
@@ -15,45 +17,54 @@ class RequestModel {
     required this.description,
     required this.date,
     required this.status,
+    required this.clientId,
+    this.nurseId,
   });
 
-  static RequestStatus _statusFromString(String value) {
-    if (value == 'accepted') return RequestStatus.accepted;
-    return RequestStatus.pending;
+  static String _dateToString(dynamic value) {
+    // لو Timestamp
+    if (value is Timestamp) {
+      final d = value.toDate();
+      final mm = d.month.toString().padLeft(2, '0');
+      final dd = d.day.toString().padLeft(2, '0');
+      return "${d.year}-$mm-$dd";
+    }
+    // لو String
+    return (value ?? '').toString();
   }
 
-  static String _dateToString(dynamic v) {
-    if (v == null) return '';
-    if (v is Timestamp) {
-      final d = v.toDate();
-      return "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
-    }
-    return v.toString();
+  static RequestStatus _statusFrom(dynamic value) {
+    final s = (value ?? 'pending').toString();
+    return s == 'accepted' ? RequestStatus.accepted : RequestStatus.pending;
   }
 
   factory RequestModel.fromMap(String id, Map<String, dynamic> data) {
-    // ✅ يدعم: (title/description) أو (serviceType/notes)
-    final t = (data['title'] ?? data['serviceType'] ?? '').toString();
+    final title = (data['title'] ?? data['serviceType'] ?? '').toString();
     final desc = (data['description'] ?? data['notes'] ?? '').toString();
-    final d = _dateToString(data['date']);
-    final st = _statusFromString((data['status'] ?? 'pending').toString());
 
     return RequestModel(
       id: id,
-      title: t,
+      title: title,
+      date: (data['date'] ?? '')
+          .toString(), // لو date عندك Timestamp قولي واظبطه
       description: desc,
-      date: d,
-      status: st,
+      status: (data['status'] == 'accepted')
+          ? RequestStatus.accepted
+          : RequestStatus.pending,
+      clientId: (data['clientId'] ?? '').toString(),
+      nurseId: data['nurseId'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      // ✅ نخزن بالـ keys اللي بتستخدمها في Firebase عندك
+      // نخزن بالـ keys اللي موجودة عندك في Firebase
       'serviceType': title,
       'notes': description,
-      'date': date, // لو عندك Timestamp في create خليه Timestamp هناك
+      'date': date,
       'status': status == RequestStatus.accepted ? 'accepted' : 'pending',
+      'clientId': clientId,
+      'nurseId': nurseId,
     };
   }
 }

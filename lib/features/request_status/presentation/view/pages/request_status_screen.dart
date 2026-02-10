@@ -61,7 +61,17 @@ class RequestStatusScreen extends StatelessWidget {
             return ListView.builder(
               itemCount: requests.length,
               itemBuilder: (context, index) {
-                return RequestCard(request: requests[index]);
+                return NurseRequestCard(
+                  request: requests[index],
+
+                  onAccept: () {
+                    print("Accepted: ${requests[index].id}");
+                  },
+
+                  onDecline: () {
+                    print("Declined: ${requests[index].id}");
+                  },
+                );
               },
             );
           },
