@@ -102,7 +102,7 @@ class _NurseRequestsView extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(
                       18,
-                    ), // نفس راديوس الكارت عندك تقريباً
+                    ), 
                     onTap: () {
                       Navigator.push(
                         context,
