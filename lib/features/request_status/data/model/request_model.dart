@@ -6,7 +6,7 @@ class RequestModel {
   final String id;
   final String title;
   final String description;
-  final String date; // هنخليه String جاهز للعرض
+  final String date;
   final RequestStatus status;
   final String clientId;
   final String? nurseId;
@@ -22,14 +22,12 @@ class RequestModel {
   });
 
   static String _dateToString(dynamic value) {
-    // لو Timestamp
     if (value is Timestamp) {
       final d = value.toDate();
       final mm = d.month.toString().padLeft(2, '0');
       final dd = d.day.toString().padLeft(2, '0');
       return "${d.year}-$mm-$dd";
     }
-    // لو String
     return (value ?? '').toString();
   }
 
@@ -45,8 +43,7 @@ class RequestModel {
     return RequestModel(
       id: id,
       title: title,
-      date: (data['date'] ?? '')
-          .toString(), // لو date عندك Timestamp قولي واظبطه
+      date: _formatDate(data['date']),
       description: desc,
       status: (data['status'] == 'accepted')
           ? RequestStatus.accepted
@@ -58,7 +55,6 @@ class RequestModel {
 
   Map<String, dynamic> toMap() {
     return {
-      // نخزن بالـ keys اللي موجودة عندك في Firebase
       'serviceType': title,
       'notes': description,
       'date': date,
@@ -66,5 +62,21 @@ class RequestModel {
       'clientId': clientId,
       'nurseId': nurseId,
     };
+  }
+
+  static String _formatDate(dynamic value) {
+    if (value == null) return '';
+
+    if (value is Timestamp) {
+      final d = value.toDate();
+
+      final y = d.year;
+      final m = d.month.toString().padLeft(2, '0');
+      final day = d.day.toString().padLeft(2, '0');
+
+      return "$y/$m/$day";
+    }
+
+    return value.toString();
   }
 }
