@@ -1,4 +1,3 @@
-
 import 'package:riaaya_app/features/profile/presentation/view_model/cubit/client_profile.dart';
 
 sealed class ClientProfileState {

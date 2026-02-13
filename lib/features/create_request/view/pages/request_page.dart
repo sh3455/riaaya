@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/create_request/cubit/request_cubit.dart';
-import 'package:riaaya_app/features/create_request/cubit/request_state.dart';
 import 'package:riaaya_app/features/create_request/view/widgets/data_picker_field.dart';
-import 'package:riaaya_app/features/create_request/view/widgets/notes_field.dart';
-import 'package:riaaya_app/features/create_request/view/widgets/service_dropdown.dart';
-import 'package:riaaya_app/features/create_request/view/widgets/time_picker_field.dart';
+import 'package:riaaya_app/features/create_request/view_model/cubit/request_cubit.dart';
 import 'package:riaaya_app/features/profile/presentation/view/pages/profile/client_profile_page.dart';
 import 'package:riaaya_app/features/profile/presentation/view/widgets/client_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
-
+import '../../view_model/cubit/request_state.dart';
+import '../widgets/service_dropdown.dart';
+import '../widgets/time_picker_field.dart';
+import '../widgets/notes_field.dart';
 
 class CreateRequestScreen extends StatelessWidget {
   const CreateRequestScreen({super.key});
@@ -31,13 +30,19 @@ class _CreateRequestView extends StatelessWidget {
     final cubit = context.read<CreateRequestCubit>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Request'), centerTitle: true),
+      appBar: AppBar(title:
+      const Text('Create Request',
+        style: TextStyle(
+        fontSize: 30,
+          fontWeight: FontWeight.w700,
+
+      ),),
+          centerTitle: true),
       bottomNavigationBar: AppBottomBar(
         initialIndex: 0,
         onChanged: (i) {
-          if (i == 0)
-            return;
-          else if (i == 1) {
+          if (i == 0) return;
+          if (i == 1) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -59,9 +64,8 @@ class _CreateRequestView extends StatelessWidget {
         child: BlocConsumer<CreateRequestCubit, CreateRequestState>(
           listener: (context, state) {
             if (state.error != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.error!)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error!)));
             }
             if (state.isSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -72,21 +76,19 @@ class _CreateRequestView extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            final cubit = context.read<CreateRequestCubit>();
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Service Type'),
+                const Text(
+                  'Service Type',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                ),
                 const SizedBox(height: 8),
-
                 ServiceDropdown(
                   value: state.serviceType,
                   onChanged: cubit.changeServiceType,
                 ),
-
                 const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Expanded(
@@ -104,27 +106,40 @@ class _CreateRequestView extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 16),
-                const Text('Additional Notes'),
+                const Text('Additional Notes',
+                  style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500
+                ),),
                 const SizedBox(height: 8),
-
                 NotesField(onChanged: cubit.changeNotes),
-
                 const Spacer(),
-
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3D7AF5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                     onPressed: state.isSubmitting ? null : cubit.submitRequest,
                     child: state.isSubmitting
                         ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Submit Request'),
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                        : const Text(
+                      'Submit Request',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],

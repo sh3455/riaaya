@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/profile/presentation/view/pages/profile/nurse_requests.dart';
-
+import 'package:riaaya_app/features/auth/presentation/view/pages/login/login_page.dart';
+import '../../../../../nurse_request/presentation/nurse_requests.dart';
 import '../../../view_model/cubit/profile/nurse_profile_cubit.dart';
 import '../../../view_model/cubit/profile/nurse_profile_state.dart';
-
 import '../../widgets/client_profile/edit_dialog.dart';
 import '../../widgets/client_profile/field_tile.dart';
 import '../../widgets/client_profile/section_card.dart';
-
 import '../../widgets/nurse_profile/bottom_bar.dart';
 
 class NurseProfileView extends StatelessWidget {
@@ -30,15 +28,7 @@ class NurseProfileView extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
         ),
       ),
-
-      body: BlocConsumer<NurseProfileCubit, NurseProfileState>(
-        listener: (context, state) {
-          if (state is NurseProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
+      body: BlocBuilder<NurseProfileCubit, NurseProfileState>(
         builder: (context, state) {
           if (state is NurseProfileLoading || state is NurseProfileInitial) {
             return const Center(child: CircularProgressIndicator());
@@ -57,95 +47,24 @@ class NurseProfileView extends StatelessWidget {
           final phone = (d['phone'] ?? '').toString();
           final email = (d['email'] ?? '').toString();
 
-          return LayoutBuilder(
-            builder: (context, c) {
-              final w = c.maxWidth;
-              final isTablet = w >= 720;
-              final isDesktop = w >= 1024;
-
-              final maxW = isDesktop ? 980.0 : 920.0;
-              final gap = isDesktop ? 16.0 : 14.0;
-
-              final header = _headerCard(primary, name, email);
-
-              final personalCard = _personalCard(
-                context,
-                isSaving: loaded.isSaving,
-                birth: birth,
-                location: location,
-                phone: phone,
-              );
-
-              final profCard = _experienceCard(
-                context,
-                isSaving: loaded.isSaving,
-                experience: experience,
-              );
-
-              final contactCard = _contactCard(
-                context,
-                isSaving: loaded.isSaving,
-                email: email,
-                phone: phone,
-              );
-
-              Widget content;
-              if (isTablet) {
-                content = Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          header,
-                          SizedBox(height: gap),
-                          personalCard,
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: gap),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          profCard,
-                          SizedBox(height: gap),
-                          contactCard,
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                content = Column(
-                  children: [
-                    header,
-                    SizedBox(height: gap),
-                    personalCard,
-                    SizedBox(height: gap),
-                    profCard,
-                    SizedBox(height: gap),
-                    contactCard,
-                  ],
-                );
-              }
-
-              return Center(
-                child: SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxW),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 80),
-                      child: content,
-                    ),
-                  ),
-                ),
-              );
-            },
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _headerCard(primary, name, email),
+                const SizedBox(height: 20),
+                _personalCard(context, loaded, birth, location, phone),
+                const SizedBox(height: 20),
+                _experienceCard(context, loaded, experience),
+                const SizedBox(height: 20),
+                _contactCard(context, loaded, email, phone),
+                const SizedBox(height: 30),
+                _logoutButton(context),
+              ],
+            ),
           );
         },
       ),
-
-      // ✅ البار ثابت هنا
       bottomNavigationBar: NurseBottomBar(
         initialIndex: 1, // Profile
         onChanged: (i) {
@@ -161,20 +80,32 @@ class NurseProfileView extends StatelessWidget {
     );
   }
 
-  // ===== Header Card =====
+  Widget _logoutButton(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        await context.read<NurseProfileCubit>().logout();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      },
+      icon: const Icon(Icons.logout,color: Colors.white,size: 30,),
+      label: const Text("Logout",style: TextStyle(fontSize: 20,color: Colors.white),),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xFF3D7AF5),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
   Widget _headerCard(Color primary, String name, String email) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 18, offset: const Offset(0, 8))],
       ),
       child: Column(
         children: [
@@ -186,54 +117,32 @@ class NurseProfileView extends StatelessWidget {
               color: primary.withOpacity(.12),
               border: Border.all(color: primary.withOpacity(.30), width: 2),
             ),
-            child: Center(
-              child: Icon(Icons.person_rounded, size: 44, color: primary),
-            ),
+            child: Center(child: Icon(Icons.person_rounded, size: 44, color: primary)),
           ),
           const SizedBox(height: 10),
-          Text(
-            name.isEmpty ? "Nurse" : name,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-          ),
+          Text(name.isEmpty ? "Nurse" : name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
-          Text(
-            email.isEmpty ? "-" : email,
-            style: const TextStyle(
-              color: Color(0xFF6E7280),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          Text(email.isEmpty ? "-" : email, style: const TextStyle(color: Color(0xFF6E7280), fontWeight: FontWeight.w700)),
         ],
       ),
     );
   }
 
-  // ===== cards =====
-  Widget _personalCard(
-    BuildContext context, {
-    required bool isSaving,
-    required String birth,
-    required String location,
-    required String phone,
-  }) {
+  Widget _personalCard(BuildContext context, NurseProfileLoaded loaded, String birth, String location, String phone) {
     return SectionCard(
       title: "Personal Details",
-      onEdit: isSaving
-          ? () {}
-          : () async {
-              final updates = await showEditDialog(
-                context: context,
-                title: "Edit Personal Details",
-                fields: [
-                  EditField(keyName: "birth", label: "Date of Birth", initialValue: birth),
-                  EditField(keyName: "location", label: "Location", initialValue: location),
-                  EditField(keyName: "phone", label: "Phone", initialValue: phone),
-                ],
-              );
-              if (updates != null) {
-                context.read<NurseProfileCubit>().updateFields(updates);
-              }
-            },
+      onEdit: () async {
+        final updates = await showEditDialog(
+          context: context,
+          title: "Edit Personal Details",
+          fields: [
+            EditField(keyName: "birth", label: "Date of Birth", initialValue: birth),
+            EditField(keyName: "location", label: "Location", initialValue: location),
+            EditField(keyName: "phone", label: "Phone", initialValue: phone),
+          ],
+        );
+        if (updates != null) context.read<NurseProfileCubit>().updateFields(updates);
+      },
       children: [
         FieldTile(label: "Date of Birth", value: birth),
         const SizedBox(height: 10),
@@ -244,56 +153,37 @@ class NurseProfileView extends StatelessWidget {
     );
   }
 
-  Widget _experienceCard(
-    BuildContext context, {
-    required bool isSaving,
-    required String experience,
-  }) {
+  Widget _experienceCard(BuildContext context, NurseProfileLoaded loaded, String experience) {
     return SectionCard(
       title: "Professional Experience",
-      onEdit: isSaving
-          ? () {}
-          : () async {
-              final updates = await showEditDialog(
-                context: context,
-                title: "Edit Professional Experience",
-                fields: [
-                  EditField(keyName: "experience", label: "Experience", initialValue: experience),
-                ],
-              );
-              if (updates != null) {
-                context.read<NurseProfileCubit>().updateFields(updates);
-              }
-            },
+      onEdit: () async {
+        final updates = await showEditDialog(
+          context: context,
+          title: "Edit Professional Experience",
+          fields: [EditField(keyName: "experience", label: "Experience", initialValue: experience)],
+        );
+        if (updates != null) context.read<NurseProfileCubit>().updateFields(updates);
+      },
       children: [
         FieldTile(label: "Experience", value: experience),
       ],
     );
   }
 
-  Widget _contactCard(
-    BuildContext context, {
-    required bool isSaving,
-    required String email,
-    required String phone,
-  }) {
+  Widget _contactCard(BuildContext context, NurseProfileLoaded loaded, String email, String phone) {
     return SectionCard(
       title: "Contact Information",
-      onEdit: isSaving
-          ? () {}
-          : () async {
-              final updates = await showEditDialog(
-                context: context,
-                title: "Edit Contact Info",
-                fields: [
-                  EditField(keyName: "email", label: "Email", initialValue: email),
-                  EditField(keyName: "phone", label: "Phone", initialValue: phone),
-                ],
-              );
-              if (updates != null) {
-                context.read<NurseProfileCubit>().updateFields(updates);
-              }
-            },
+      onEdit: () async {
+        final updates = await showEditDialog(
+          context: context,
+          title: "Edit Contact Info",
+          fields: [
+            EditField(keyName: "email", label: "Email", initialValue: email),
+            EditField(keyName: "phone", label: "Phone", initialValue: phone),
+          ],
+        );
+        if (updates != null) context.read<NurseProfileCubit>().updateFields(updates);
+      },
       children: [
         FieldTile(label: "Email", value: email),
         const SizedBox(height: 10),

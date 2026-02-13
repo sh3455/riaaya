@@ -3,11 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:riaaya_app/core/widgets/custom_button.dart';
+import 'package:riaaya_app/features/auth/presentation/view/pages/login/login_page.dart';
 import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/pages/request_status_screen.dart';
 import '../../../../../auth/data/Repo/hive_auth_service.dart';
 import '../../../../../auth/presentation/view/widgets/login/client_login_layout.dart';
-import '../../../../../create_request/view/request_screan.dart';
+import '../../../../../create_request/view/pages/request_page.dart';
 import '../../../view_model/cubit/profile/client_profile_cubit.dart';
 import '../../../view_model/cubit/profile/client_profile_state.dart';
 import '../../widgets/client_profile/bottom_bar.dart';
@@ -100,16 +101,45 @@ class _ClientProfileView extends StatelessWidget {
                           ],
                         ),
                       const SizedBox(height: 20),
-                      CustomButton(
-                        text: "Logout",
-                        onTap: () async {
-                          final hiveService = HiveAuthService();
-                          await hiveService.logout();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const ClientLoginLayout()),
-                          );
-                        },
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+
+                            final hiveService = HiveAuthService();
+                            await hiveService.logout();
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LoginPage()),
+                                  (route) => false,
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          label: const Text(
+                            "Logout",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3D7AF5),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 4,
+                          ),
+                        ),
                       ),
                     ],
                   ),

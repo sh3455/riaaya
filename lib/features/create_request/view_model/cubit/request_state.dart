@@ -41,7 +41,6 @@ class CreateRequestState {
     );
   }
 
-  // ✅ دي اللي كانت ناقصة
   Map<String, dynamic> toJson() {
     return {
       'serviceType': serviceType,
@@ -52,7 +51,6 @@ class CreateRequestState {
     };
   }
 
-  // (اختياري) لو هترجع request من فايرستور
   factory CreateRequestState.fromJson(Map<String, dynamic> json) {
     final d = json['date'];
     final hour = json['timeHour'];

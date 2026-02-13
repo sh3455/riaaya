@@ -3,7 +3,7 @@ import 'package:riaaya_app/core/theme/color/app_color.dart';
 import 'package:riaaya_app/features/request_status/data/model/request_data.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/widgets/request_cord.dart';
 
-import '../../../../create_request/view/request_screan.dart';
+import '../../../../create_request/view/pages/request_page.dart';
 import '../../../../profile/presentation/view/pages/profile/client_profile_page.dart';
 import '../../../../profile/presentation/view/widgets/client_profile/bottom_bar.dart';
 
@@ -13,11 +13,18 @@ class RequestStatusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.background,
+      backgroundColor: Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text("Request Status"),
+        backgroundColor: Color(0xFFF8F9FA),
+        title: const Text("Request Status",
+          style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w700),),
         centerTitle: true,
-        actions: const [Icon(Icons.notifications_none), SizedBox(width: 12)],
+        actions: const [
+          Icon(Icons.notifications_none),
+          SizedBox(width: 12)
+        ],
       ),
       bottomNavigationBar: AppBottomBar(
         initialIndex: 1,

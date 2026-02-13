@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/register/client_Register_layout.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/register/nurse_Register_client.dart';
+import 'package:riaaya_app/features/auth/presentation/view/widgets/register/client_register_layout.dart';
+import 'package:riaaya_app/features/auth/presentation/view/widgets/register/nurse_register_layout.dart';
 
 import '../../widgets/login/client_login_layout.dart';
-import '../../widgets/login/nurse_login_client.dart';
+import '../../widgets/login/nurse_login_layout.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

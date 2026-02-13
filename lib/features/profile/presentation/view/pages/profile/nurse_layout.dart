@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/profile/presentation/view/pages/profile/nurse_requests.dart';
+import 'package:riaaya_app/features/nurse_request/presentation/nurse_requests.dart';
 import 'package:riaaya_app/features/profile/presentation/view/pages/profile/profile_nurse.dart';
 import 'package:riaaya_app/features/profile/presentation/view_model/cubit/nurse_layout_cubit.dart';
 
@@ -11,6 +11,7 @@ class NurseLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B6CFF);
+    var size = MediaQuery.of(context).size;
 
     return BlocProvider(
       create: (_) => NurseLayoutCubit(),
@@ -30,7 +31,7 @@ class NurseLayout extends StatelessWidget {
         bottomNavigationBar: BlocBuilder<NurseLayoutCubit, int>(
           builder: (context, index) {
             return Container(
-              height: 74,
+              height: 150,
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riaaya_app/features/profile/data/Repo/client_profile_repository.dart';
-import 'package:riaaya_app/features/profile/presentation/view_model/cubit/client_profile.dart';
-
+import '../client_profile.dart';
 import 'client_profile_state.dart';
 
 class ClientProfileCubit extends Cubit<ClientProfileState> {
@@ -18,12 +18,8 @@ class ClientProfileCubit extends Cubit<ClientProfileState> {
     emit(const ClientProfileLoading());
     _sub?.cancel();
     _sub = repo.watchClient(uid).listen(
-      (profile) {
-        emit(ClientProfileLoaded(profile));
-      },
-      onError: (e) {
-        emit(ClientProfileError(e.toString()));
-      },
+          (profile) => emit(ClientProfileLoaded(profile)),
+      onError: (e) => emit(ClientProfileError(e.toString())),
     );
   }
 
@@ -34,11 +30,19 @@ class ClientProfileCubit extends Cubit<ClientProfileState> {
     emit(current.copyWith(isSaving: true));
     try {
       await repo.updateClient(uid, updates);
-      // Stream هيجيب آخر نسخة تلقائي
     } catch (e) {
       emit(ClientProfileError("Update failed: $e"));
-      // رجّع تاني آخر بيانات لو حابب
       emit(ClientProfileLoaded(current.profile));
+    }
+  }
+
+  // ✅ Logout method زي Nurse
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      _sub?.cancel();
+    } catch (e) {
+      emit(ClientProfileError("Logout failed: $e"));
     }
   }
 

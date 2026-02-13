@@ -10,14 +10,19 @@ class NotesField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return  TextField(
       maxLines: 4,
       onChanged: onChanged,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: 'Describe any specific needs or instructions...',
+        fillColor: const Color(0xffDEE1E6),
         filled: true,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
+
   }
 }

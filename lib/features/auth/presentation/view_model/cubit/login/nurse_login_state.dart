@@ -15,3 +15,5 @@ class NurseLoginError extends NurseLoginState {
   final String message;
   NurseLoginError(this.message);
 }
+
+class NurseLoginTogglePassword extends NurseLoginState {}

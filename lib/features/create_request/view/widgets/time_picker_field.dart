@@ -26,7 +26,7 @@ class TimePickerField extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Color(0xFFDEE1E6),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(

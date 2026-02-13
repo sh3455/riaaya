@@ -25,9 +25,13 @@ class ServiceDropdown extends StatelessWidget {
       onChanged: (v) {
         if (v != null) onChanged(v);
       },
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
+        fillColor: const Color(0xffDEE1E6),
         filled: true,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }

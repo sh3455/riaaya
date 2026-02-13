@@ -20,13 +20,13 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
       emit(state.copyWith(notes: notes, isSuccess: false, error: null));
 
   Future<void> submitRequest() async {
-    debugPrint(" submitRequest called");
+    debugPrint("submitRequest called");
 
     if (state.date == null) {
-      debugPrint("date is null");
+      debugPrint("Date is null");
       emit(
         state.copyWith(
-          error: "اختار التاريخ",
+          error: "Please select a date",
           isSubmitting: false,
           isSuccess: false,
         ),
@@ -34,10 +34,10 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
       return;
     }
     if (state.time == null) {
-      debugPrint(" time is null");
+      debugPrint("Time is null");
       emit(
         state.copyWith(
-          error: "اختار الوقت",
+          error: "Please select a time",
           isSubmitting: false,
           isSuccess: false,
         ),
@@ -50,7 +50,7 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
     if (uid == null) {
       emit(
         state.copyWith(
-          error: "لازم تسجل دخول الأول",
+          error: "You need to log in first",
           isSubmitting: false,
           isSuccess: false,
         ),
@@ -73,7 +73,7 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
         ...state.toJson(),
         'clientId': uid,
         'status': 'pending',
-        'createdAt': FieldValue.serverTimestamp(), // ✅ مهم FieldValue (V كبيرة)
+        'createdAt': FieldValue.serverTimestamp(),
         'visitAt': Timestamp.fromDate(visitAt),
         'nurseId': null,
       };
@@ -82,10 +82,10 @@ class CreateRequestCubit extends Cubit<CreateRequestState> {
 
       await FirebaseFirestore.instance.collection('requests').add(data);
 
-      debugPrint(" Firestore add SUCCESS");
+      debugPrint("Firestore add SUCCESS");
       emit(state.copyWith(isSubmitting: false, isSuccess: true, error: null));
     } catch (e) {
-      debugPrint(" Firestore add ERROR: $e");
+      debugPrint("Firestore add ERROR: $e");
       emit(
         state.copyWith(
           isSubmitting: false,

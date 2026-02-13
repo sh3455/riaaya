@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:riaaya_app/features/profile/presentation/view/pages/nurse/screen_nurse_requests_details.dart';
 import 'package:riaaya_app/features/profile/presentation/view/widgets/nurse_profile/bottom_bar.dart';
 import 'package:riaaya_app/features/request_status/data/model/cubit/nurse_requests_cubit.dart';
 import 'package:riaaya_app/features/request_status/data/model/cubit/nurse_requests_state.dart';
 import 'package:riaaya_app/features/request_status/data/model/rebo/nurse_requests_repo.dart';
 import 'package:riaaya_app/features/request_status/presentation/view/widgets/request_cord.dart';
 
-import '../profile/profile_nurse.dart'; // NurseProfilePage عندك
+import '../../profile/presentation/view/pages/profile/profile_nurse.dart';
+import 'nurse/screen_nurse_requests_details.dart';
 
 class NurseRequestsPage extends StatelessWidget {
   const NurseRequestsPage({super.key});

@@ -4,14 +4,14 @@ import '../../../data/model/request_model.dart';
 
 class NurseRequestCard extends StatelessWidget {
   final RequestModel request;
-  final VoidCallback onAccept;
-  final VoidCallback onDecline;
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
 
   const NurseRequestCard({
     super.key,
     required this.request,
-    required this.onAccept,
-    required this.onDecline,
+     this.onAccept,
+     this.onDecline,
   });
 
   @override
@@ -88,48 +88,48 @@ class NurseRequestCard extends StatelessWidget {
           const Divider(),
           const SizedBox(height: 12),
 
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onDecline,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    "Decline",
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onAccept,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2F6BFF),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    "Accept",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: OutlinedButton(
+          //         onPressed: onDecline,
+          //         style: OutlinedButton.styleFrom(
+          //           padding: const EdgeInsets.symmetric(vertical: 14),
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(25),
+          //           ),
+          //         ),
+          //         child: const Text(
+          //           "Decline",
+          //           style: TextStyle(
+          //             color: Colors.red,
+          //             fontWeight: FontWeight.w700,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(width: 14),
+          //     Expanded(
+          //       child: ElevatedButton(
+          //         onPressed: onAccept,
+          //         style: ElevatedButton.styleFrom(
+          //           backgroundColor: const Color(0xFF2F6BFF),
+          //           padding: const EdgeInsets.symmetric(vertical: 14),
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(25),
+          //           ),
+          //         ),
+          //         child: const Text(
+          //           "Accept",
+          //           style: TextStyle(
+          //             color: Colors.white,
+          //             fontWeight: FontWeight.w700,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

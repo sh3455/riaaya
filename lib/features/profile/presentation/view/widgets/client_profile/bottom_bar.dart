@@ -13,9 +13,10 @@ class AppBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B6CFF);
+    var size = MediaQuery.of(context).size;
 
     return Container(
-      height: 74,
+      height: size.height*0.1,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

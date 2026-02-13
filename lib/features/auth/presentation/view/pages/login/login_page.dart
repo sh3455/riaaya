@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/login/client_login_layout.dart';
 import 'package:riaaya_app/features/auth/presentation/view/widgets/custom_text_address.dart';
-import 'package:riaaya_app/features/auth/presentation/view/widgets/login/nurse_login_client.dart';
+import 'package:riaaya_app/features/auth/presentation/view/widgets/login/nurse_login_layout.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

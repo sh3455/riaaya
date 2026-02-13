@@ -1,8 +1,7 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'nurse_profile_state.dart';
 
 class NurseProfileCubit extends Cubit<NurseProfileState> {
@@ -12,23 +11,18 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _sub;
 
   NurseProfileCubit({required this.uid, required this.firestore})
-    : super(const NurseProfileLoading());
+      : super(const NurseProfileLoading());
 
   void start() {
     _sub?.cancel();
-
-    _sub = firestore
-        .collection('nurses')
-        .doc(uid)
-        .snapshots()
-        .listen(
+    _sub = firestore.collection('nurses').doc(uid).snapshots().listen(
           (doc) {
-            emit(NurseProfileLoaded(data: doc.data() ?? {}));
-          },
-          onError: (e) {
-            emit(NurseProfileError(e.toString()));
-          },
-        );
+        emit(NurseProfileLoaded(data: doc.data() ?? {}));
+      },
+      onError: (e) {
+        emit(NurseProfileError(e.toString()));
+      },
+    );
   }
 
   Future<void> updateFields(Map<String, dynamic> updates) async {
@@ -46,15 +40,21 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
     emit(NurseProfileLoaded(data: merged, isSaving: true));
 
     try {
-      await firestore
-          .collection('nurses')
-          .doc(uid)
-          .set(clean, SetOptions(merge: true));
-
+      await firestore.collection('nurses').doc(uid).set(clean, SetOptions(merge: true));
       emit(NurseProfileLoaded(data: merged, isSaving: false));
     } catch (e) {
       emit(NurseProfileError("Update failed: $e"));
       emit(current.copyWith(isSaving: false));
+    }
+  }
+
+  // ✅ Logout method
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      _sub?.cancel();
+    } catch (e) {
+      emit(NurseProfileError("Logout failed: $e"));
     }
   }
 }

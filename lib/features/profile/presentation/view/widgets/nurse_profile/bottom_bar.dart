@@ -15,7 +15,7 @@ class NurseBottomBar extends StatelessWidget {
     const primary = Color(0xFF5B6CFF);
 
     return Container(
-      height: 74,
+      height: 100,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

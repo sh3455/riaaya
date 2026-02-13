@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../data/Repo/firebase_service-login_nurse.dart';
@@ -8,10 +9,29 @@ class NurseLoginCubit extends Cubit<NurseLoginState> {
   final NurseAuthRepository repository;
   final HiveAuthService hiveService = HiveAuthService();
 
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool isPasswordHidden = true;
+
   NurseLoginCubit(this.repository) : super(NurseLoginInitial());
 
-  Future<void> login(String email, String password) async {
+  void togglePasswordVisibility() {
+    isPasswordHidden = !isPasswordHidden;
+    emit(NurseLoginTogglePassword());
+  }
+
+  Future<void> login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      emit(NurseLoginError("Email and password are required"));
+      return;
+    }
+
     emit(NurseLoginLoading());
+
     try {
       final user = await repository.login(email: email, password: password);
 
@@ -38,5 +58,12 @@ class NurseLoginCubit extends Cubit<NurseLoginState> {
     await hiveService.logout();
     await FirebaseAuth.instance.signOut();
     emit(NurseLoginInitial());
+  }
+
+  @override
+  Future<void> close() {
+    emailController.dispose();
+    passwordController.dispose();
+    return super.close();
   }
 }
